@@ -1,6 +1,6 @@
-import Config from '../types/Config';
-import Environment from '../types/Environment';
-import LogLevel from '../types/LogLevel';
+import Config from '../../../../src/types/Config';
+import Environment from '../../../../src/types/Environment';
+import LogLevel from '../../../../src/types/LogLevel';
 
 export default class ConfigService {
   /**

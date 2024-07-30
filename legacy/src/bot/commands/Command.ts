@@ -1,6 +1,6 @@
 import Discord from 'discord.js';
 
-import Dependencies from '../../core/types/Dependencies';
+import Dependencies from '../../../../src/types/Dependencies';
 
 export default abstract class Command {
   /**

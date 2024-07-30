@@ -6,7 +6,7 @@ import HttpService from './core/services/http.service';
 import LoggerService from './core/services/logger.service';
 import MongoService from './core/services/mongo.service';
 
-import Dependencies from './core/types/Dependencies';
+import Dependencies from '../../src/types/Dependencies';
 
 import Bot from './bot/Bot';
 
