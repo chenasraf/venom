@@ -1,7 +1,7 @@
 import path from 'path';
 import winston from 'winston';
 
-import LogLevel from '../types/LogLevel';
+import LogLevel from '../../../../src/types/LogLevel';
 
 import ConfigService from './config.service';
 

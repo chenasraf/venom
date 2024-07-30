@@ -1,6 +1,6 @@
 import Discord from 'discord.js';
 
-import Dependencies from '../core/types/Dependencies';
+import Dependencies from '../../../src/types/Dependencies';
 
 import Command from './commands/Command';
 import AddGreetingCommand from './commands/add-greeting.command';

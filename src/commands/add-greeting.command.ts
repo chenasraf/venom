@@ -1,39 +1,42 @@
-import Discord from 'discord.js';
-import Command from './Command';
+import { command } from '@/core/commands'
+import { db } from '@/core/db'
+import { BOT_PREFIX } from '@/env'
 
-export default class AddGreetingCommand extends Command {
-  async execute(message: Discord.Message, args: string[]): Promise<Discord.Message> {
+export default command({
+  command: 'addgreeting',
+  aliases: ['ag', 'add-greeting'],
+  description:
+    'Adds a string to the list greetings used when new users connect to server! Include `{name}` in your message to replace with the new users name.',
+  examples: [`\`${BOT_PREFIX}addgreeting Welcome to the club {name}\``],
+  async execute(message, args) {
     // Only certain users can use this command
     // TODO: Better handling of permissions for commands in a generic way
-    const permittedRoles = new Set(['staff', 'mod', 'bot-devs']);
-    const isPermitted = message.member.roles.cache.some((r) => permittedRoles.has(r.name));
+    const permittedRoles = new Set(['staff', 'mod', 'bot-devs'])
+    const isPermitted = message.member?.roles.cache.some((r) => permittedRoles.has(r.name))
 
     if (!isPermitted) {
-      return message.author.send("Sorry but I can't let you add greetings!");
+      return message.author.send("Sorry but I can't let you add greetings!")
     }
 
     // Can't do much without a message
     if (args.length === 0) {
-      return message.author.send('When adding a greeting you need to also provide a message!');
+      return message.author.send('When adding a greeting you need to also provide a message!')
     }
 
     // Check for dupes
-    const greetingStr = args.join(' ');
-    const matchedMessages = await this.dependencies.mongoService.find(message.author.id, 'greetings', {
-      message: greetingStr,
-    });
-    if (matchedMessages.length > 0) {
-      return message.author.send('That greeting has already been added!');
+    const greetingStr = args.join(' ')
+    const collection = db.collection('greetings')
+    const matchedMessages = await collection.countDocuments({ message: greetingStr })
+    if (matchedMessages > 0) {
+      return message.author.send('That greeting has already been added!')
     }
 
-    const result = await this.dependencies.mongoService.insert(message.author.id, 'greetings', [
-      { message: greetingStr },
-    ]);
+    const result = await collection.insertOne({ message: greetingStr })
 
     if (!result) {
-      return message.author.send("Uh-oh! Couldn't add that greeting!");
+      return message.author.send("Uh-oh! Couldn't add that greeting!")
     }
 
-    return message.author.send("I've added the greeting you told me about!");
-  }
-}
+    return message.author.send("I've added the greeting you told me about!")
+  },
+})

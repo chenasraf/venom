@@ -1,8 +1,12 @@
-import Discord from 'discord.js';
-import Command from './Command';
+import Discord from 'discord.js'
+import { command } from '@/core/commands'
 
-export default class PingCommand extends Command {
+export default command({
+  command: 'ping',
+  aliases: [],
+  description: 'ping',
+  examples: [],
   async execute(message: Discord.Message): Promise<Discord.Message> {
-    return message.reply('Pong!');
-  }
-}
+    return message.reply('Pong!')
+  },
+})

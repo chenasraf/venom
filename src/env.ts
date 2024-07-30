@@ -8,8 +8,10 @@ if (env === 'development') {
 }
 dotenv.config({ path: path.resolve(process.cwd(), '.env') })
 
-export const BOT_TRIGGERS = process.env.BOT_TRIGGERS!.split("|")
+export const BOT_TRIGGERS = process.env.BOT_TRIGGERS!.split('|')
+export const BOT_PREFIX = BOT_TRIGGERS[0]
 export const DISCORD_APP_ID = process.env.DISCORD_APP_ID!
 export const DISCORD_PUBLIC_KEY = process.env.DISCORD_PUBLIC_KEY!
 export const DISCORD_TOKEN = process.env.DISCORD_TOKEN!
 export const LOG_LEVEL = process.env.LOG_LEVEL!
+export const MONGODB_URI = process.env.MONGODB_URI!

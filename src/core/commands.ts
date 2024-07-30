@@ -7,7 +7,8 @@ export interface Command {
   command: string
   aliases: string[]
   description: string
-  execute(message: Message, args: string[]): void
+  examples: string[]
+  execute(_message: Message, _args: string[]): void
 }
 
 let _commands: Record<string, Command> = {}
@@ -49,4 +50,12 @@ export function parseCommand(message: string): Command | null {
     }
   }
   return null
+}
+
+export function command(conf: Command): Command {
+  return conf
+}
+
+export function commands(): Record<string, Command> {
+  return _commands
 }

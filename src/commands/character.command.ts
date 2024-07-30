@@ -1,18 +1,30 @@
-import Discord from 'discord.js';
+import Discord from 'discord.js'
 
-import Character from '../../carp/character/character.entity';
+import { db } from '@/core/db'
+import { command } from '@/core/commands'
 
-import Command from './Command';
+// TODO move to types file
+export interface Character {
+  uid: string
+  name: string
+}
 
-export default class CharacterCommand extends Command {
+export default command({
+  command: 'character',
+  aliases: ['c'],
+  description: 'Get information about your character',
+  examples: ['`!character`'],
   async execute(message: Discord.Message): Promise<Discord.Message> {
     // Just testing db stuff
-    const matchedChar = await this.dependencies.databaseService.manager.findOne(Character, message.author.id);
+
+    const matchedChar = await db
+      .collection<Character>('characters')
+      .findOne({ userId: message.author.id })
 
     if (!matchedChar) {
-      return message.reply(`Doesn't look like you have joined this campaign`);
+      return message.reply(`Doesn't look like you have joined this campaign`)
     }
 
-    return message.reply(`Welcome back ${matchedChar.name}`);
-  }
-}
+    return message.reply(`Welcome back ${matchedChar.name}`)
+  },
+})
