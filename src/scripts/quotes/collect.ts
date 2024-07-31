@@ -7,6 +7,7 @@ import path from 'node:path'
 import { JSDOM } from 'jsdom'
 import { Quote } from '@/commands/quotes.command'
 import { nanoid } from 'nanoid'
+import { logger } from '@/core/logger'
 
 const PAGE_SIZE = 15
 const MAX_PAGE = 35
@@ -28,7 +29,7 @@ async function run(): Promise<void> {
 
   for (let i = 0; i < PAGE_SIZE * MAX_PAGE; i += PAGE_SIZE) {
     const urlWithPage = `${url}&st=${i}`
-    console.log(`fetching: ${urlWithPage}`)
+    logger.log(`fetching: ${urlWithPage}`)
 
     const headers = new Headers()
     headers.set('Cookie', process.env.CA_SCRAPER_COOKIE!)
@@ -46,13 +47,13 @@ async function run(): Promise<void> {
             const author = (row.querySelector('td:first-child') as HTMLElement).innerText
             const quote = (row.querySelector('td:nth-child(2)') as HTMLElement).innerText
             if (!author && !quote) continue
-            console.log(`Found: ${author}: "${quote}"`)
+            logger.log(`Found: ${author}: "${quote}"`)
             quotes.push({ author, quote, uid: nanoid() })
           }
           return quotes
         })
         .catch((error) => {
-          console.error(error)
+          logger.error(error)
           return [] as Quote[]
         }),
     )
@@ -61,7 +62,7 @@ async function run(): Promise<void> {
   await Promise.all(promises)
 
   await fs.writeFile(path.join(outputDir, 'quotes.json'), JSON.stringify(quotes))
-  console.log('Wrote output.')
+  logger.log('Wrote output.')
 
   const csvOut = [['author', 'quote']]
   for (const row of quotes) {
@@ -77,7 +78,7 @@ async function run(): Promise<void> {
   stringify(quotes, async (err, out) => {
     if (err) throw err
     await fs.writeFile(path.join(outputDir, 'quotes.csv'), out)
-    console.log('Wrote output.')
+    logger.log('Wrote output.')
   })
 }
 

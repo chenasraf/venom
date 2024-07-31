@@ -1,6 +1,7 @@
 import Discord from 'discord.js'
 import { command, commands } from '@/core/commands'
 import { BOT_PREFIX } from '@/env'
+import { logger } from '@/core/logger'
 
 export default command({
   command: 'help',
@@ -62,7 +63,7 @@ export default command({
     try {
       return message.reply(data.join('\n'))
     } catch (error) {
-      console.log('error', `Could not send help DM to ${message.author.tag}.\n`, error)
+      logger.error(`Could not send help DM to ${message.author.tag}.\n`, error)
 
       return message.reply("it seems like I can't DM you! Do you have DMs disabled?")
     }
