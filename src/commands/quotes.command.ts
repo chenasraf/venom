@@ -7,7 +7,7 @@ export interface Quote {
   author: string
   quote: string
   uid: string
-  meta: {
+  meta?: {
     authorCachedName: string
     createdBy: string
     createdByCachedName: string
@@ -55,7 +55,8 @@ export default command({
 })
 
 const clean = (str: string): string => str.replace(/[\t\n|]+/g, ' ').replace(/\s+/g, ' ')
-const getQuoteStr = ({ author, quote, uid }: Quote): string => `"${quote}" - ${author} (#${uid})`
+const getQuoteStr = (guild: Discord.Guild, { author, quote, uid }: Quote): string =>
+  `"${quote}" - ${author} (${guild.members.cache.get(uid)?.toString() ?? `<@${uid}>`})`
 
 async function getRandomQuote(message: Discord.Message, _args: string[]): Promise<void> {
   const count = await collection.countDocuments()
@@ -64,7 +65,7 @@ async function getRandomQuote(message: Discord.Message, _args: string[]): Promis
 
   if (q.length > 0) {
     const quote: Quote = q[0]
-    message.reply(getQuoteStr(quote))
+    message.reply(getQuoteStr(message.guild!, quote))
   } else {
     message.reply(
       "This is where I would usually put a quote. I can't remember any, for some reason...",
@@ -85,7 +86,7 @@ async function searchQuotes(message: Discord.Message, args: string[]): Promise<v
   if (q.length > 0) {
     let responseTxt = ''
     q.forEach((quote) => {
-      responseTxt += `\n${getQuoteStr(quote)}`
+      responseTxt += `\n${getQuoteStr(message.guild!, quote)}`
     })
     message.reply("Found a few, I'll DM you what I got!")
     message.author.send(`Found ${q.length} quote${q.length !== 1 ? 's' : ''}:\n${responseTxt}`)
@@ -148,7 +149,7 @@ async function addNewQuote(message: Discord.Message, args: string[]): Promise<vo
     },
   }
 
-  const quoteStr = getQuoteStr(quoteObj)
+  const quoteStr = getQuoteStr(message.guild!, quoteObj)
   collection.insertOne(quoteObj)
   message.reply(`${replies[Math.floor(Math.random() * replies.length)]}\n${quoteStr}`)
 }
@@ -162,5 +163,5 @@ async function getSingleQuote(message: Discord.Message, args: string[]): Promise
     return
   }
 
-  message.reply(getQuoteStr(quote))
+  message.reply(getQuoteStr(message.guild!, quote))
 }

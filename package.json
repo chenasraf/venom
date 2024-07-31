@@ -8,6 +8,9 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.8.0",
+    "@types/jsdom": "^21.1.7",
+    "csv": "^6.3.10",
+    "jsdom": "^24.1.1",
     "nodemon": "^3.1.4",
     "tsx": "^4.16.2",
     "typescript-eslint": "^7.18.0"
