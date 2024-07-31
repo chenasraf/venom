@@ -2,6 +2,7 @@ import { Message } from 'discord.js'
 import path from 'node:path'
 import fs from 'node:fs/promises'
 import { BOT_TRIGGERS } from '@/env'
+import { logger } from './logger'
 
 export interface Command {
   command: string
@@ -19,7 +20,7 @@ export async function loadCommands(): Promise<Command[]> {
   const files = await fs.readdir(dir)
   for (const file of files) {
     const command = (await import(path.resolve(dir, file))).default
-    console.log('Command loaded:', command.command)
+    logger.debug('Command loaded:', command.command)
     _commands[command.command] = command
   }
   return Object.values(_commands)
