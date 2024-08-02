@@ -5,6 +5,9 @@ import { logger } from '@/core/logger'
 import { CHATTER_REPLY_CHANCE, trainMegahal } from '@/core/megahal'
 
 export function handleMessage(message: Discord.Message) {
+  // ignore bot/own messages
+  if (message.author.bot) return
+
   logger.log('Message received:', message.content, 'from', message.author.username)
   let triggered = false
 
