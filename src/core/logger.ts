@@ -22,9 +22,9 @@ const _logger = winston.createLogger({
           debug: 34, // blue
           silly: 35, // magenta
         }
-        const color = `\x1b[${colorMap[i.level as LogLevel]}m[`
-        const level = i.level.toUpperCase().padEnd(7, ' ')
-        return `${color}${level}] ${i.message}`
+        const color = `\x1b[${colorMap[i.level as LogLevel]}m`
+        const level = `[${i.level.toUpperCase()}]`.padStart(10, ' ')
+        return `${color}${level} ${i.message}`
       }),
     }),
   ],

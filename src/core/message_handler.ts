@@ -8,13 +8,18 @@ export function handleMessage(message: Discord.Message) {
   // ignore bot/own messages
   if (message.author.bot) return
 
-  logger.log('Message received:', message.content, 'from', message.author.username)
+  logger.debug(
+    'Message received:',
+    JSON.stringify(message.content),
+    'from',
+    '@' + message.author.username,
+  )
   let triggered = false
 
   for (const prefix of COMMAND_TRIGGERS) {
     if (message.content.startsWith(prefix)) {
       triggered = true
-      logger.log('Command received:', message.content, 'from', message.author.username)
+      logger.log('Parsing as command:', JSON.stringify(message.content))
       const command = parseCommand(message.content)
       const [cmdName, ...args] = parseArguments(message.content)
       if (command) {
