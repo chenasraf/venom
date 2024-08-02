@@ -67,18 +67,24 @@ async function run(): Promise<void> {
   const csvOut = [['author', 'quote']]
   for (const row of quotes) {
     csvOut.push(
-      [row.author, row.quote].map((v) => {
+      [row.author, row.quote] /*.map((v) => {
         v = v.replace(/(\n+)/g, '\n').replace(/"/g, '""').trim()
         return v.includes(' ') || v.includes('\t') ? `"${v}"` : v
-      }),
+      })*/,
     )
   }
 
   const stringify = csv.stringify
-  stringify(quotes, async (err, out) => {
-    if (err) throw err
-    await fs.writeFile(path.join(outputDir, 'quotes.csv'), out)
-    logger.log('Wrote output.')
+  await new Promise((res, rej) => {
+    stringify(quotes, async (err, out) => {
+      if (err) {
+        rej(err)
+        return
+      }
+      await fs.writeFile(path.join(outputDir, 'quotes.csv'), out)
+      logger.log('Wrote output.')
+      res(undefined)
+    })
   })
 }
 
