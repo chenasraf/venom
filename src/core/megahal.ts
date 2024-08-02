@@ -31,7 +31,7 @@ export function trainMegahal(message: Discord.Message, replyChance: number) {
     (msg, trigger) => (msg.startsWith(trigger) ? msg.replace(trigger, '') : msg),
     message.content,
   )
-  logger.log('Learning from message:', JSON.stringify(input))
+  logger.debug('Learning from message:', JSON.stringify(input))
   const response = megahal.reply(input)
 
   if (Math.random() < replyChance) {
