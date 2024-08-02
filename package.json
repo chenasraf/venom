@@ -12,13 +12,13 @@
     "csv": "^6.3.10",
     "jsdom": "^24.1.1",
     "nodemon": "^3.1.4",
-    "tsx": "^4.16.2",
-    "typescript-eslint": "^7.18.0"
+    "tsx": "^4.16.5",
+    "typescript-eslint": "^8.0.0"
   },
   "dependencies": {
     "discord.js": "^14.15.3",
     "dotenv": "^16.4.5",
-    "megahal.js": "^1.0.2",
+    "megahal.js": "^1.0.3",
     "mongodb": "^6.8.0",
     "nanoid": "^5.0.7",
     "winston": "^3.13.1"
