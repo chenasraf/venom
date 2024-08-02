@@ -1,6 +1,6 @@
 import Discord from 'discord.js'
 import { command, commands } from '@/core/commands'
-import { BOT_PREFIX } from '@/env'
+import { DEFAULT_COMMAND_PREFIX } from '@/env'
 import { logger } from '@/core/logger'
 
 export default command({
@@ -18,13 +18,13 @@ export default command({
       data.push("here's a list of all my commands:\n")
 
       for (const cmd of commandList) {
-        let response = `\`${BOT_PREFIX}${cmd.command}\` `
+        let response = `\`${DEFAULT_COMMAND_PREFIX}${cmd.command}\` `
         if (cmd.description) {
           response += `**${cmd.description}** `
         }
         if (cmd.aliases) {
-          response += `\n\t\t\t*alternatively:* \`${BOT_PREFIX}${cmd.aliases.join(
-            `\`, \`${BOT_PREFIX}`,
+          response += `\n\t\t\t*alternatively:* \`${DEFAULT_COMMAND_PREFIX}${cmd.aliases.join(
+            `\`, \`${DEFAULT_COMMAND_PREFIX}`,
           )}\``
         }
         data.push(response)
@@ -36,7 +36,7 @@ export default command({
         data.push('\n')
       }
       data.push(
-        `You can send \`${BOT_PREFIX}help [command name]\` to get info on a specific command!`,
+        `You can send \`${DEFAULT_COMMAND_PREFIX}help [command name]\` to get info on a specific command!`,
       )
     } else {
       // Get description of single command
