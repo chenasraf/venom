@@ -11,7 +11,7 @@ export interface Character {
 
 export default command({
   command: 'character',
-  aliases: ['c'],
+  aliases: ['ch'],
   description: 'Get information about your character',
   examples: ['`!character`'],
   async execute(message: Discord.Message): Promise<Discord.Message> {
