@@ -1,12 +1,12 @@
 import { command } from '@/core/commands'
-import { BOT_PREFIX } from '@/env'
+import { DEFAULT_COMMAND_PREFIX } from '@/env'
 import Discord from 'discord.js'
 
 export default command({
   command: '8ball',
   aliases: ['eightball', 'magicball', 'ball', 'wisdomball'],
   description: 'Ask the magic eightball for advice.',
-  examples: [`\`${BOT_PREFIX} 8ball will I be awesome today?\``],
+  examples: [`\`${DEFAULT_COMMAND_PREFIX} 8ball will I be awesome today?\``],
   async execute(message: Discord.Message, args: string[]): Promise<Discord.Message> {
     if (args.length === 0) {
       return message.reply("where's the question?")

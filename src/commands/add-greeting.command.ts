@@ -1,13 +1,13 @@
 import { command } from '@/core/commands'
 import { db } from '@/core/db'
-import { BOT_PREFIX } from '@/env'
+import { DEFAULT_COMMAND_PREFIX } from '@/env'
 
 export default command({
   command: 'addgreeting',
   aliases: ['ag', 'add-greeting'],
   description:
     'Adds a string to the list greetings used when new users connect to server! Include `{name}` in your message to replace with the new users name.',
-  examples: [`\`${BOT_PREFIX}addgreeting Welcome to the club {name}\``],
+  examples: [`\`${DEFAULT_COMMAND_PREFIX}addgreeting Welcome to the club {name}\``],
   async execute(message, args) {
     // Only certain users can use this command
     // TODO: Better handling of permissions for commands in a generic way

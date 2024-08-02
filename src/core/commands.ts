@@ -1,7 +1,7 @@
 import { Message } from 'discord.js'
 import path from 'node:path'
 import fs from 'node:fs/promises'
-import { BOT_TRIGGERS } from '@/env'
+import { COMMAND_TRIGGERS } from '@/env'
 import { logger } from './logger'
 
 export interface Command {
@@ -27,7 +27,7 @@ export async function loadCommands(): Promise<Command[]> {
 }
 
 function cleanMessage(message: string): string {
-  for (const prefix of BOT_TRIGGERS) {
+  for (const prefix of COMMAND_TRIGGERS) {
     if (message.startsWith(prefix)) {
       message = message.slice(prefix.length).trim()
       break
