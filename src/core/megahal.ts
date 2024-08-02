@@ -1,6 +1,7 @@
 import Discord from 'discord.js'
 import MegaHAL from 'megahal.js'
 import { logger } from './logger'
+import { CHAT_TRIGGERS } from '@/env'
 import fs from 'node:fs/promises'
 import path from 'node:path'
 
@@ -26,12 +27,16 @@ fs.access(BRAIN_FILE, fs.constants.F_OK)
 
 export function trainMegahal(message: Discord.Message, replyChance: number) {
   msgCount += 1
-  logger.log('Learning from message:', JSON.stringify(message.content))
-  const response = megahal.reply(message.content)
+  const input = CHAT_TRIGGERS.reduce(
+    (msg, trigger) => (msg.startsWith(trigger) ? msg.replace(trigger, '') : msg),
+    message.content,
+  )
+  logger.log('Learning from message:', JSON.stringify(input))
+  const response = megahal.reply(input)
 
   if (Math.random() < replyChance) {
     logger.log('Chatter chance reached, replying:', JSON.stringify(response))
-    message.reply(response)
+    message.reply(response.replace(/<error>/g, ''))
   }
 
   if (msgCount >= SAVE_RATE) {
