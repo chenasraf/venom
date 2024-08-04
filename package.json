@@ -3,6 +3,7 @@
   "version": "0.0.1",
   "description": "",
   "scripts": {
+    "start": "tsx src/index.ts",
     "dev": "nodemon --exec tsx src/index.ts",
     "build": "tsc && tsc-alias",
     "test": "echo \"Error: no test specified\" && exit 1"
