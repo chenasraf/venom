@@ -25,6 +25,7 @@ export default command({
     '`!quote` - Get a random quote',
     '`!quote search <query>` - Search for a quote',
     '`!quote add <quote>` - Add a new quote',
+    '`!quote remove <id>` - Remove quote',
     '`!quote <id>` - Get a specific quote',
   ],
   async execute(message, args) {
@@ -40,6 +41,11 @@ export default command({
       // Search quotes
       case 'search':
         searchQuotes(message, args.slice(1))
+        return
+
+      // Remove quote
+      case 'remove':
+        removeQuote(message, args[1])
         return
 
       // Add quote
@@ -95,6 +101,16 @@ async function searchQuotes(message: Discord.Message, args: string[]): Promise<v
   }
 }
 
+async function removeQuote(message: Discord.Message, id: string): Promise<void> {
+  const q = await collection.findOne({ uid: id })
+  if (!q) {
+    message.reply(`Quote ${id} not found`)
+    return
+  }
+  collection.deleteOne({ uid: id })
+  message.reply(`Quote ${id} deleted - ${getQuoteStr(message.guild!, q)}`)
+}
+
 async function addNewQuote(message: Discord.Message, args: string[]): Promise<void> {
   const [authorRaw, ...restRaw] = args
   const hasAuthor = /<@!\d+>/.test(authorRaw) || authorRaw.startsWith('@')
@@ -109,8 +125,8 @@ async function addNewQuote(message: Discord.Message, args: string[]): Promise<vo
     ? authorRaw.startsWith('@')
       ? authorRaw.slice(1)
       : message.mentions.guild!.members.cache.find(
-        (u) => u.user.id === message.mentions.users.first()!.id,
-      )?.displayName
+          (u) => u.user.id === message.mentions.users.first()!.id,
+        )?.displayName
     : message.member!.displayName
   const quote = (hasAuthor ? restRaw : [authorRaw, ...restRaw]).join(' ')
 
@@ -119,7 +135,8 @@ async function addNewQuote(message: Discord.Message, args: string[]): Promise<vo
     `are you serious? This is the best quote ever${differentAuthor ? `, ${author}` : ''}!`,
     'OH. MY. GOD. Perfection.',
     'I am putting this on my wall. This is a quote I will hold dear to me always.',
-    `is that real? Woah! Hey,${differentAuthor ? ` ${author},` : ''
+    `is that real? Woah! Hey,${
+      differentAuthor ? ` ${author},` : ''
     } did you ever consider writing a book?! This will sell for millions.`,
     clean(`okay, this is spooky. I definitely dreamt of ${!hasAuthor ? 'a person' : differentAuthor ? author : 'you'}
     saying exactly that this week. ${!hasAuthor ? 'Is someone' : differentAuthor ? `Is ${author}` : 'Are you'}
@@ -129,8 +146,9 @@ async function addNewQuote(message: Discord.Message, args: string[]): Promise<vo
     "I can't believe you withold that quote from me until now. It's way too good to just remain unshared!",
     'I have a pretty large memory capacity for a bot, and I gotta say, I scanned all my other quotes, this one is definitely on the top 10.',
     clean(`Oh, I am DEFINITELY saving this. One day someone will interview me about
-    ${!hasAuthor ? 'the best quote I can recall,' : differentAuthor ? author : 'you'
-      } and I will refer to this moment precisely.`),
+    ${
+      !hasAuthor ? 'the best quote I can recall,' : differentAuthor ? author : 'you'
+    } and I will refer to this moment precisely.`),
     clean(`you're not serious. Are you serious? You can't be serious. It's impossible there's **this** good a quote just floating around
     out there. It's probably fictional. Yeah.`),
   ]
