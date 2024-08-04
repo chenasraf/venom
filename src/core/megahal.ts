@@ -4,7 +4,7 @@ import { logger } from './logger'
 import { CHAT_TRIGGERS } from '@/env'
 import fs from 'node:fs/promises'
 import path from 'node:path'
-
+let muted = false
 const BRAIN_FILE = path.resolve(process.cwd(), 'data', 'brain.dat')
 // every 20 messages
 const SAVE_RATE = 20
@@ -25,6 +25,25 @@ fs.access(BRAIN_FILE, fs.constants.F_OK)
     return megahal.load(BRAIN_FILE).then(() => logger.log('Brain loaded from', BRAIN_FILE))
   })
 
+export async function saveBrain() {
+  const success = await megahal.save(BRAIN_FILE)
+  if (success) {
+    logger.log('Brain saved to', BRAIN_FILE)
+  } else {
+    logger.error('Failed to save brain')
+  }
+  return success
+}
+
+export function setMuted(value: boolean) {
+  logger.log('Setting MegaHAL mute to', value)
+  muted = value
+}
+
+export function isMuted() {
+  return muted
+}
+
 export function trainMegahal(message: Discord.Message, replyChance: number) {
   msgCount += 1
   const input = CHAT_TRIGGERS.reduce(
@@ -34,7 +53,7 @@ export function trainMegahal(message: Discord.Message, replyChance: number) {
   logger.debug('Learning from message:', JSON.stringify(input))
   const response = megahal.reply(input)
 
-  if (Math.random() < replyChance) {
+  if (Math.random() < replyChance && !isMuted()) {
     logger.log('Chatter chance reached, replying:', JSON.stringify(response))
     message.reply(response.replace(/<error>/g, ''))
   }
