@@ -19,7 +19,10 @@ export default command({
     const name = args[0]
 
     const commandList = Object.values(commands()).filter((c) =>
-      name ? c.command.toLowerCase() === name.toLowerCase() : true,
+      name
+        ? c.command.toLowerCase() === name.toLowerCase() ||
+          c.aliases.some((a) => a.toLowerCase() === name.toLowerCase())
+        : true,
     )
 
     for (const cmd of commandList) {
