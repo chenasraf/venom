@@ -1,16 +1,21 @@
 import { command } from '@/core/commands'
 import { logger } from '@/core/logger'
-import { isMuted, megahal, saveBrain, setMuted } from '@/core/megahal'
-import { DEFAULT_COMMAND_PREFIX } from '@/env'
+import { CHATTER_REPLY_CHANCE, isMuted, megahal, saveBrain, setMuted } from '@/core/megahal'
+import { CHAT_TRIGGERS, DEFAULT_COMMAND_PREFIX } from '@/env'
 
 export default command({
   command: 'chat',
   aliases: ['c'],
-  description: 'Manage chatting with Venom',
+  description:
+    `Manage chatting with Venom. Venom will have a ${CHATTER_REPLY_CHANCE * 100}% chance to reply to any incoming message on a channel unless muted.\n\n` +
+    'Muting completely disables chatting, to avoid bugs relating to infinite triggers, or any other reason.',
   examples: [
     `\`${DEFAULT_COMMAND_PREFIX}chat mute\` - shuts him up`,
     `\`${DEFAULT_COMMAND_PREFIX}chat unmute\` - unmutes him`,
     `\`${DEFAULT_COMMAND_PREFIX}chat save\` - backs up the brain immediately`,
+    `\`${DEFAULT_COMMAND_PREFIX}chat <anything else>\` - chat with Venom and immediately get a reply. ` +
+    `You can also just prefix it with one of the chat prefixes: \`${CHAT_TRIGGERS.join('`, `')}\`, ` +
+    `e.g. "${CHAT_TRIGGERS[0]}hi!"`,
   ],
   execute: async (message, args) => {
     if (!args.length) {
