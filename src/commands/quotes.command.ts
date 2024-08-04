@@ -26,6 +26,7 @@ export default command({
     '`!quote` - Get a random quote',
     '`!quote <id>` - Get a specific quote',
     '`!quote search <query>` - Search for a quote',
+    '`!quote count` - See how many quotes have been stored so far!',
     '`!quote add @author <quote>` - Add a new quote (@author can be a user mention, a plain nickname, or left out)',
     '`!quote remove <id>` - Remove quote - You can only remove quotes you created to reduce abuse.',
   ],
@@ -53,6 +54,13 @@ export default command({
       case 'search':
         searchQuotes(message, args.slice(1))
         return
+
+      // Get quote count
+      case 'count':
+        await countQuotes(message)
+        return
+
+      // Get single quote
       default:
         if (first.startsWith('#')) {
           getSingleQuote(message, args[0].substring(1))
@@ -72,6 +80,11 @@ const getQuoteStr = (
   const _authorName = authorUid ? guild.members.cache.get(authorUid)?.displayName : authorName
   const authorMention = authorUid ? `<@!${authorUid}>` : `@${_authorName}`
   return `**"${quote}"** - ${authorMention} (ID: #${uid})`
+}
+
+async function countQuotes(message: Discord.Message<boolean>) {
+  const count = await collection.countDocuments()
+  message.reply(`There are ${count} quotes stored.`)
 }
 
 async function getRandomQuote(message: Discord.Message, _args: string[]): Promise<void> {
