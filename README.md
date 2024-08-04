@@ -2,8 +2,8 @@
 
 This is the Discord bot for Creation Asylum.
 
-Major credits to [https://github.com/jondeaves](https://github.com/jondeaves) and
-[gslance](https://github.com/gslance) for most of the original infrastructure and commands. ❤️
+Major credits to [jondeaves](https://github.com/jondeaves) and [gslance](https://github.com/gslance)
+for most of the original infrastructure and commands. ❤️
 
 ## Development
 
