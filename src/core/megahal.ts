@@ -2,8 +2,8 @@ import Discord from 'discord.js'
 import MegaHAL from 'megahal.js'
 import { logger } from './logger'
 import { CHAT_TRIGGERS } from '@/env'
-import fs from 'node:fs/promises'
 import path from 'node:path'
+import { fileExists } from '@/utils/file_utils'
 let muted = false
 const BRAIN_FILE = path.resolve(process.cwd(), 'data', 'brain.dat')
 // every 20 messages
@@ -15,16 +15,16 @@ export const CHATTER_REPLY_CHANCE = 0.02
 
 logger.log('Initializing MegaHAL')
 export const megahal = new MegaHAL()
+loadBrain()
 
-fs.access(BRAIN_FILE, fs.constants.F_OK)
-  .then(() => true)
-  .catch(() => false)
-  .then((exists) => {
-    if (!exists) {
-      return logger.log('Brain file not found, using default brain')
-    }
-    return megahal.load(BRAIN_FILE).then(() => logger.log('Brain loaded from', BRAIN_FILE))
-  })
+async function loadBrain() {
+  const exists = await fileExists(BRAIN_FILE)
+
+  if (!exists) {
+    return logger.log('Brain file not found, using default brain')
+  }
+  return megahal.load(BRAIN_FILE).then(() => logger.log('Brain loaded from', BRAIN_FILE))
+}
 
 export async function saveBrain() {
   const success = await megahal.save(BRAIN_FILE)

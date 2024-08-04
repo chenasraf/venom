@@ -6,8 +6,8 @@ import path from 'node:path'
 // import { getHTMLPage } from '../http-tools';
 import { JSDOM } from 'jsdom'
 import { Quote } from '@/commands/quotes.command'
-import { nanoid } from 'nanoid'
 import { logger } from '@/core/logger'
+import { friendlyUID } from '@/utils/string_utils'
 
 const PAGE_SIZE = 15
 const MAX_PAGE = 35
@@ -44,11 +44,10 @@ async function run(): Promise<void> {
             window: { document },
           } = dom
           for (const row of document.querySelectorAll('#ucpcontent table.ipbtable tr')) {
-            const author = (row.querySelector('td:first-child') as HTMLElement).innerText
+            const authorName = (row.querySelector('td:first-child') as HTMLElement).innerText
             const quote = (row.querySelector('td:nth-child(2)') as HTMLElement).innerText
-            if (!author && !quote) continue
-            logger.log(`Found: ${author}: "${quote}"`)
-            quotes.push({ author, quote, uid: nanoid() })
+            if (!authorName && !quote) continue
+            quotes.push({ authorName, quote, uid: friendlyUID() })
           }
           return quotes
         })
@@ -67,7 +66,7 @@ async function run(): Promise<void> {
   const csvOut = [['author', 'quote']]
   for (const row of quotes) {
     csvOut.push(
-      [row.author, row.quote] /*.map((v) => {
+      [row.authorName, row.quote] /*.map((v) => {
         v = v.replace(/(\n+)/g, '\n').replace(/"/g, '""').trim()
         return v.includes(' ') || v.includes('\t') ? `"${v}"` : v
       })*/,
