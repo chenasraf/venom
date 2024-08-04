@@ -59,6 +59,7 @@ export function trainMegahal(message: Discord.Message, replyChance: number) {
     logger.log('Chatter chance reached, replying:', JSON.stringify(response))
     message.reply(response.replace(/<error>/g, ''))
   }
+
   const totalMsgs = Object.values(msgCount).reduce((total, cur) => total + cur, 0)
   if (totalMsgs >= SAVE_RATE) {
     megahal.save(BRAIN_FILE).then(() => logger.log('Brain saved to', BRAIN_FILE))

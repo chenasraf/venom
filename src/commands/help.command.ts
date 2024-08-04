@@ -3,69 +3,79 @@ import { command, commands } from '@/core/commands'
 import { DEFAULT_COMMAND_PREFIX } from '@/env'
 import { logger } from '@/core/logger'
 
+interface HelpMessage {
+  command: string
+  description: string
+}
+
 export default command({
   command: 'help',
   aliases: ['h'],
   description: 'Lists available commands and their usage.',
-  examples: ['`!help`', '`!help ping`'],
+  examples: ['`!help`', '`!help ping`', '`!help chat`'],
+  async execute(message, args) {
+    let output = ''
+    const data: HelpMessage[] = []
+    const name = args[0]
 
-  async execute(message: Discord.Message, args: string[]): Promise<Discord.Message> {
-    const data = []
+    const commandList = Object.values(commands()).filter((c) =>
+      name ? c.command.toLowerCase() === name.toLowerCase() : true,
+    )
 
-    const commandList = Object.values(commands())
-    if (!args || args.length === 0) {
-      // Get for all commands
-      data.push("here's a list of all my commands:\n")
+    for (const cmd of commandList) {
+      let description = `\`${DEFAULT_COMMAND_PREFIX}${cmd.command}\``
 
-      for (const cmd of commandList) {
-        let response = `\`${DEFAULT_COMMAND_PREFIX}${cmd.command}\` `
-        if (cmd.description) {
-          response += `**${cmd.description}** `
-        }
-        if (cmd.aliases) {
-          response += `\n\t\t\t*alternatively:* \`${DEFAULT_COMMAND_PREFIX}${cmd.aliases.join(
-            `\`, \`${DEFAULT_COMMAND_PREFIX}`,
-          )}\``
-        }
-        data.push(response)
-
-        cmd.examples.forEach((example) => {
-          data.push(`\t\t\t*for example:* ${example}`)
-        })
-
-        data.push('\n')
+      if (cmd.description) {
+        const wrapped = cmd.description.replace(/\n/g, '\n\t\t\t')
+        description += ` - ${wrapped}`
       }
-      data.push(
-        `You can send \`${DEFAULT_COMMAND_PREFIX}help [command name]\` to get info on a specific command!`,
-      )
-    } else {
-      // Get description of single command
-      const name = args[0].toLowerCase()
-      const cmd = commandList.find(
-        (cmd) => cmd.command === name || (cmd.aliases && cmd.aliases.includes(name)),
-      )
-
-      if (!cmd) {
-        message.reply("that's not a valid command!")
-      } else {
-        data.push(`**Name:** ${cmd.command}`)
-
-        if (cmd.aliases) {
-          data.push(`**Aliases:** ${cmd.aliases.join(', ')}`)
-        }
-
-        if (cmd.description) {
-          data.push(`**Description:** ${cmd.description}`)
-        }
+      if (cmd.aliases) {
+        description += `\n\t\t*Aliases:* \`${DEFAULT_COMMAND_PREFIX}${cmd.aliases.join(
+          `\`, \`${DEFAULT_COMMAND_PREFIX}`,
+        )}\``
       }
+
+      cmd.examples.forEach((example) => {
+        description += `\n\t\t\t*e.g.:* ${example}`
+      })
+
+      data.push({ command: name, description })
     }
 
+    if (!data.length) {
+      return message.reply(`I couldn't find any command with the name ${name}.`)
+    }
+
+    if (name) {
+      output += `Here's what I know about the ${name} command:`
+    } else {
+      output += "Here's a list of all my commands:\n"
+      output += `You can send \`${DEFAULT_COMMAND_PREFIX}help [command name]\` to get info on a specific command.`
+    }
+    output += '\n'
+    for (const line of data) {
+      output += `\n${line.description}\n`
+    }
     try {
-      return message.reply(data.join('\n'))
+      if (
+        [
+          Discord.ChannelType.PublicThread,
+          Discord.ChannelType.PrivateThread,
+          Discord.ChannelType.DM,
+        ].includes(message.channel.type)
+      ) {
+        return message.reply(output)
+      }
+
+      // const thread = await message.startThread({
+      //   name: name ? `Help with ${name}` : 'Help',
+      //   autoArchiveDuration: 60,
+      // })
+      logger.info(`Sending help DM to ${message.author.tag}.\n`, output)
+      return message.reply(output)
     } catch (error) {
       logger.error(`Could not send help DM to ${message.author.tag}.\n`, error)
-
-      return message.reply("it seems like I can't DM you! Do you have DMs disabled?")
+      return message.reply(output)
     }
   },
 })

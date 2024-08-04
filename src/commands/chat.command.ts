@@ -7,15 +7,14 @@ export default command({
   command: 'chat',
   aliases: ['c'],
   description:
-    `Manage chatting with Venom. Venom will have a ${CHATTER_REPLY_CHANCE * 100}% chance to reply to any incoming message on a channel unless muted.\n\n` +
+    `Manage chatting with Venom. Venom will have a ${CHATTER_REPLY_CHANCE * 100}% chance to reply to any incoming message on a channel unless muted.\n` +
     'Muting completely disables chatting, to avoid bugs relating to infinite triggers, or any other reason.',
   examples: [
     `\`${DEFAULT_COMMAND_PREFIX}chat mute\` - shuts him up`,
     `\`${DEFAULT_COMMAND_PREFIX}chat unmute\` - unmutes him`,
     `\`${DEFAULT_COMMAND_PREFIX}chat save\` - backs up the brain immediately`,
-    `\`${DEFAULT_COMMAND_PREFIX}chat <anything else>\` - chat with Venom and immediately get a reply. ` +
-    `You can also just prefix it with one of the chat prefixes: \`${CHAT_TRIGGERS.join('`, `')}\`, ` +
-    `e.g. "${CHAT_TRIGGERS[0]}hi!"`,
+    `\`${DEFAULT_COMMAND_PREFIX}chat <anything else>\` - chat with Venom and immediately get a reply.`,
+    `\`${CHAT_TRIGGERS[1]}hi!\` - You can also just prefix it with one of the chat prefixes to chat more naturally: \`${CHAT_TRIGGERS.join('`, `')}\`, `,
   ],
   execute: async (message, args) => {
     if (!args.length) {

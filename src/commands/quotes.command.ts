@@ -56,7 +56,7 @@ export default command({
 
 const clean = (str: string): string => str.replace(/[\t\n|]+/g, ' ').replace(/\s+/g, ' ')
 const getQuoteStr = (guild: Discord.Guild, { author, quote, uid }: Quote): string =>
-  `"${quote}" - ${author} (${guild.members.cache.get(uid)?.toString() ?? `<@${uid}>`})`
+  `"${quote}" - ${author} (${guild.members.cache.get(uid)?.toString() ?? `(ID: #${uid})`})`
 
 async function getRandomQuote(message: Discord.Message, _args: string[]): Promise<void> {
   const count = await collection.countDocuments()
@@ -109,8 +109,8 @@ async function addNewQuote(message: Discord.Message, args: string[]): Promise<vo
     ? authorRaw.startsWith('@')
       ? authorRaw.slice(1)
       : message.mentions.guild!.members.cache.find(
-          (u) => u.user.id === message.mentions.users.first()!.id,
-        )?.displayName
+        (u) => u.user.id === message.mentions.users.first()!.id,
+      )?.displayName
     : message.member!.displayName
   const quote = (hasAuthor ? restRaw : [authorRaw, ...restRaw]).join(' ')
 
@@ -119,8 +119,7 @@ async function addNewQuote(message: Discord.Message, args: string[]): Promise<vo
     `are you serious? This is the best quote ever${differentAuthor ? `, ${author}` : ''}!`,
     'OH. MY. GOD. Perfection.',
     'I am putting this on my wall. This is a quote I will hold dear to me always.',
-    `is that real? Woah! Hey,${
-      differentAuthor ? ` ${author},` : ''
+    `is that real? Woah! Hey,${differentAuthor ? ` ${author},` : ''
     } did you ever consider writing a book?! This will sell for millions.`,
     clean(`okay, this is spooky. I definitely dreamt of ${!hasAuthor ? 'a person' : differentAuthor ? author : 'you'}
     saying exactly that this week. ${!hasAuthor ? 'Is someone' : differentAuthor ? `Is ${author}` : 'Are you'}
@@ -130,9 +129,8 @@ async function addNewQuote(message: Discord.Message, args: string[]): Promise<vo
     "I can't believe you withold that quote from me until now. It's way too good to just remain unshared!",
     'I have a pretty large memory capacity for a bot, and I gotta say, I scanned all my other quotes, this one is definitely on the top 10.',
     clean(`Oh, I am DEFINITELY saving this. One day someone will interview me about
-    ${
-      !hasAuthor ? 'the best quote I can recall,' : differentAuthor ? author : 'you'
-    } and I will refer to this moment precisely.`),
+    ${!hasAuthor ? 'the best quote I can recall,' : differentAuthor ? author : 'you'
+      } and I will refer to this moment precisely.`),
     clean(`you're not serious. Are you serious? You can't be serious. It's impossible there's **this** good a quote just floating around
     out there. It's probably fictional. Yeah.`),
   ]
