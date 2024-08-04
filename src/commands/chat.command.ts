@@ -1,6 +1,13 @@
 import { command } from '@/core/commands'
 import { logger } from '@/core/logger'
-import { CHATTER_REPLY_CHANCE, isMuted, megahal, saveBrain, setMuted } from '@/core/megahal'
+import {
+  CHATTER_REPLY_CHANCE,
+  getMegahalBrainSize,
+  isMuted,
+  megahal,
+  saveBrain,
+  setMuted,
+} from '@/core/megahal'
 import { CHAT_TRIGGERS, DEFAULT_COMMAND_PREFIX } from '@/env'
 
 export default command({
@@ -15,6 +22,7 @@ export default command({
     `\`${DEFAULT_COMMAND_PREFIX}chat mute\` - shuts him up`,
     `\`${DEFAULT_COMMAND_PREFIX}chat unmute\` - unmutes him`,
     `\`${DEFAULT_COMMAND_PREFIX}chat save\` - backs up the brain immediately`,
+    `\`${DEFAULT_COMMAND_PREFIX}chat size\` - shows the current brain size`,
     `\`${DEFAULT_COMMAND_PREFIX}chat <anything else>\` - chat with Venom and immediately get a reply.`,
     `\`${CHAT_TRIGGERS[1]}hi!\` - You can also just prefix it with one of the chat prefixes to chat more naturally: \`${CHAT_TRIGGERS.join('`, `')}\`, `,
   ],
@@ -42,6 +50,12 @@ export default command({
         }
         break
       }
+      case 'size': {
+        const size = await getMegahalBrainSize('string')
+        message.reply(`Brain size: ${size}`)
+        break
+      }
+
       default: {
         const input = args.join(' ')
         logger.log('Generating response for', JSON.stringify(input))

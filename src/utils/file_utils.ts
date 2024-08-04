@@ -8,3 +8,8 @@ export async function fileExists(file: string) {
     return false
   }
 }
+
+export async function getFileSize(file: string) {
+  const stats = await fs.stat(file)
+  return stats.size
+}
