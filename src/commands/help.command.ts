@@ -38,9 +38,13 @@ export default command({
         )}\``
       }
 
-      cmd.examples.forEach((example) => {
-        description += `\n\t\t\t*e.g.:* ${example}`
-      })
+      if (name) {
+        cmd.examples.forEach((example) => {
+          description += `\n\t\t\t*e.g.:* ${example}`
+        })
+      } else {
+        description += `\n\t\t\tFor examples, use \`!help ${cmd.command}\`.`
+      }
 
       data.push({ command: name, description })
     }
