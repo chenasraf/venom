@@ -7,7 +7,9 @@ export default command({
   command: 'chat',
   aliases: ['c'],
   description:
-    `Manage chatting with Venom. Venom will have a ${CHATTER_REPLY_CHANCE * 100}% chance to reply to any incoming message on a channel unless muted.\n` +
+    `Manage chatting with Venom. Venom will have a ${CHATTER_REPLY_CHANCE * 100}% (around every ` +
+    `${Math.round(1 / CHATTER_REPLY_CHANCE)} messages) chance to reply to any incoming message on ` +
+    `a channel unless muted. To change this value, contact the one of the server staff.\n` +
     'Muting completely disables chatting, to avoid bugs relating to infinite triggers, or any other reason.',
   examples: [
     `\`${DEFAULT_COMMAND_PREFIX}chat mute\` - shuts him up`,
@@ -22,7 +24,7 @@ export default command({
       return
     }
     const [sub] = args
-    switch (sub) {
+    switch (sub.toLowerCase()) {
       case 'mute':
         setMuted(true)
         message.reply('I am now muted')

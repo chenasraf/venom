@@ -9,6 +9,7 @@ const BRAIN_FILE = path.resolve(process.cwd(), 'data', 'brain.dat')
 // every 20 messages
 const SAVE_RATE = 20
 const msgCount: Record<string, number> = {}
+let totalMsgCount = 0
 // chance to reply - 0.02 ~ every 50 messages
 export const CHATTER_REPLY_CHANCE = 0.02
 
@@ -47,23 +48,25 @@ export function isMuted() {
 export function trainMegahal(message: Discord.Message, replyChance: number) {
   const key = msgCountKey(message)
   msgCount[key]! += 1
+  totalMsgCount += 1
   const input = CHAT_TRIGGERS.reduce(
     (msg, trigger) =>
       msg.toLowerCase().startsWith(trigger.toLowerCase()) ? msg.substring(trigger.length) : msg,
     message.content,
   )
   logger.debug('Learning from message:', JSON.stringify(input))
+
   const response = megahal.reply(input)
+
+  if (totalMsgCount >= SAVE_RATE) {
+    megahal.save(BRAIN_FILE).then(() => logger.log('Brain saved to', BRAIN_FILE))
+    totalMsgCount = 0
+  }
 
   if (Math.random() < replyChance && !isMuted()) {
     logger.log('Chatter chance reached, replying:', JSON.stringify(response))
     message.reply(response.replace(/<error>/g, ''))
-  }
-
-  const totalMsgs = Object.values(msgCount).reduce((total, cur) => total + cur, 0)
-  if (totalMsgs >= SAVE_RATE) {
-    megahal.save(BRAIN_FILE).then(() => logger.log('Brain saved to', BRAIN_FILE))
-    msgCount[key] = 0
+    msgCount[key]! = 0
   }
 }
 
