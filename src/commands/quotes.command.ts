@@ -1,5 +1,6 @@
 import { command } from '@/core/commands'
 import { db } from '@/core/db'
+import { DEFAULT_COMMAND_PREFIX } from '@/env'
 import { friendlyUID } from '@/utils/string_utils'
 import Discord from 'discord.js'
 
@@ -23,12 +24,12 @@ export default command({
   aliases: ['quotes', 'q'],
   description: 'Manage quotes',
   examples: [
-    '`!quote` - Get a random quote',
-    '`!quote <id>` - Get a specific quote',
-    '`!quote search <query>` - Search for a quote',
-    '`!quote count` - See how many quotes have been stored so far!',
-    '`!quote add @author <quote>` - Add a new quote (@author can be a user mention, a plain nickname, or left out)',
-    '`!quote remove <id>` - Remove quote - You can only remove quotes you created to reduce abuse.',
+    `\`${DEFAULT_COMMAND_PREFIX}quote\` - Get a random quote`,
+    `\`${DEFAULT_COMMAND_PREFIX}quote <id>\` - Get a specific quote`,
+    `\`${DEFAULT_COMMAND_PREFIX}quote search <query>\` - Search for a quote`,
+    `\`${DEFAULT_COMMAND_PREFIX}quote count\` - See how many quotes have been stored so far!`,
+    `\`${DEFAULT_COMMAND_PREFIX}quote add @author <quote>\` - Add a new quote (@author can be a user mention, a plain nickname, or left out)`,
+    `\`${DEFAULT_COMMAND_PREFIX}quote remove <id>\` - Remove quote - You can only remove quotes you created to reduce abuse.`,
   ],
   async execute(message, args) {
     // Get random quote
@@ -84,7 +85,9 @@ const getQuoteStr = (
 
 async function countQuotes(message: Discord.Message<boolean>) {
   const count = await collection.countDocuments()
-  message.reply(`There are ${count} quotes stored.`)
+  message.reply(
+    `There are ${count} quotes stored. Try a random one by using \`${DEFAULT_COMMAND_PREFIX}quote\`!`,
+  )
 }
 
 async function getRandomQuote(message: Discord.Message, _args: string[]): Promise<void> {
