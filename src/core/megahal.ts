@@ -9,8 +9,8 @@ const BRAIN_FILE = path.resolve(process.cwd(), 'data', 'brain.dat')
 // every 20 messages
 const SAVE_RATE = 20
 const msgCount: Record<string, number> = {}
-// chance to reply - 0.05 ~ every 20 messages
-export const CHATTER_REPLY_CHANCE = 0.05
+// chance to reply - 0.02 ~ every 50 messages
+export const CHATTER_REPLY_CHANCE = 0.02
 
 logger.log('Initializing MegaHAL')
 export const megahal = new MegaHAL()
