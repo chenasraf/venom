@@ -48,7 +48,8 @@ export function trainMegahal(message: Discord.Message, replyChance: number) {
   const key = msgCountKey(message)
   msgCount[key]! += 1
   const input = CHAT_TRIGGERS.reduce(
-    (msg, trigger) => (msg.startsWith(trigger) ? msg.replace(trigger, '') : msg),
+    (msg, trigger) =>
+      msg.toLowerCase().startsWith(trigger.toLowerCase()) ? msg.substring(trigger.length) : msg,
     message.content,
   )
   logger.debug('Learning from message:', JSON.stringify(input))
