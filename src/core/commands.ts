@@ -16,7 +16,7 @@ let _commands: Record<string, Command> = {}
 
 export async function loadCommands(): Promise<Command[]> {
   _commands = {}
-  const dir = path.resolve(process.cwd(), 'src', 'commands')
+  const dir = path.resolve(__dirname, '..', 'commands')
   const files = await fs.readdir(dir)
   for (const file of files) {
     const command = (await import(path.resolve(dir, file))).default

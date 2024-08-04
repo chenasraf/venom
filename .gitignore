@@ -133,3 +133,4 @@ dist
 src/scripts/outputs
 data/brain.dat
 .DS_Store
+build

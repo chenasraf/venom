@@ -4,6 +4,7 @@
   "description": "",
   "scripts": {
     "dev": "nodemon --exec tsx src/index.ts",
+    "build": "tsc && tsc-alias",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "devDependencies": {
@@ -12,6 +13,7 @@
     "csv": "^6.3.10",
     "jsdom": "^24.1.1",
     "nodemon": "^3.1.4",
+    "tsc-alias": "^1.8.10",
     "tsx": "^4.16.5",
     "typescript-eslint": "^8.0.0"
   },
