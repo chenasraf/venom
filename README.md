@@ -39,19 +39,55 @@ auto-format code for you.
 ### Environment Variables
 
 At a minimum you need to provide the `DISCORD_TOKEN` (which can be found on the Bot tab of a Discord
-application) and `MONGODB_URI` values. See table below for possible values.
-
-| key              | description                                                                                                                                          | example                                                |
-| ---------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------ |
-| COMMAND_TRIGGERS | Prefix(es) of message to let the bot know you are giving it a command. Separate multiple values by `\|`.                                             | `"!"`                                                  |
-| CHAT_TRIGGERS    | Prefix(es) of message to let the bot know you are speaking to it directly and expect a generated chatterbot reply. Separate multiple values by `\|`. | `"venom \|v \|venom, \|v, \|venom! \|v! "`             |
-| DISCORD_TOKEN    | Discord bots Token                                                                                                                                   |
-| NODE_ENV         | What environment the bot is running in                                                                                                               | `production`, `development` or `test`                  |
-| LOG_LEVEL        | What level of logs should be displayed in console                                                                                                    | `error`, `warn`, `info`, `verbose`, `debug` or `silly` |
-| MONGODB_URI      | Full connection string for MongoDB database, include db_name if user is scoped to single database                                                    | `mongodb://user:password@localhost:27017/venom_db`     |
+application) and `MONGODB_URI` values. See [.env.local.example](/.env.local.example) for a full list
+with more information about each variable.
 
 ### Bot commands
 
-To add a command you create a Typescript file in `src/commands/[filename].ts` and ensure it
-implements the `src/core/command.ts` interface. You can see the other files in this directory for
-implementation examples.
+To add a command you can run the following script:
+
+```sh
+pnpm gen command my_command_name
+```
+
+### Deployment
+
+#### Linux
+
+You can deploy on a Linux machine using Docker.
+
+```sh
+pnpm install-services
+```
+
+This will install 2 services on system.d:
+
+1. `venom-bot.service` - runs the bot
+2. `venom-db.service` - runs the Mongo database using Docker
+
+They are both set to re-start on failure. You should start them by running:
+
+```sh
+pnpm db start
+pnpm bot start
+```
+
+You can view logs using:
+
+```sh
+pnpm db logs
+pnpm bot logs
+```
+
+Any subcommand other than `logs` is passed directly to system.d with the appropriate service name,
+so you can use things like `start`, `stop`, `restart`, `enable`, `disable` and so on.
+
+To update the bot from source, simply use:
+
+```sh
+git pull
+pnpm bot restart
+```
+
+> **IMPORTANT:** Don't forget to save the MegaHAL brain for the bot before restarting it by sending
+> `!chat save` on any whitelisted channel the bot is on.
