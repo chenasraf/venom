@@ -10,7 +10,6 @@ import {
 } from '@/core/megahal'
 import { CHAT_TRIGGERS, DEFAULT_COMMAND_PREFIX } from '@/env'
 import { isWhitelisted, manipulateWhitelist } from '@/lib/blacklist'
-import { formatBytes } from '@/utils/string_utils'
 
 export default command({
   command: 'chat',
@@ -40,7 +39,7 @@ export default command({
         const action = args[1]?.trim().toLowerCase() as 'add' | 'remove' | undefined
         const type = args[2]?.trim().toLowerCase() as 'guild' | 'channel' | undefined
         message.reply(
-          await manipulateWhitelist('commands', action, type, message.guild!, message.channel),
+          await manipulateWhitelist('chat', action, type, message.guild!, message.channel),
         )
         break
       }
