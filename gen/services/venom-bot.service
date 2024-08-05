@@ -4,7 +4,7 @@ After=network.target
 
 [Service]
 WorkingDirectory={{appRoot}}
-ExecStart=/usr/local/bin/pnpm start
+ExecStart=/root/Library/pnpm/pnpm start
 ExecStop=/bin/kill -SIGINT $MAINPID
 Restart=on-failure
 RestartSec=5
