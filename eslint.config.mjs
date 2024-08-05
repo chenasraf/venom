@@ -13,6 +13,6 @@ export default [
     },
   },
   {
-    ignores: ['node_modules/', 'build/', 'dist/', 'gen/'],
+    ignores: ['node_modules/', 'build/', 'dist/', 'gen/', 'scaffold.config.js'],
   },
 ]

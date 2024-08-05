@@ -131,7 +131,6 @@ dist
 
 # CUSTOM
 src/scripts/outputs
-data/brain.dat
 .DS_Store
 build
-data/db
+data/

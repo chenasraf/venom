@@ -4,6 +4,7 @@ After=docker.service
 Requires=docker.service
 
 [Service]
+WorkingDirectory={{appRoot}}
 Environment="DOCKER_RUN_CMD=docker run \
   --name venom-mongo \
   --hostname=2d2cb1232ad1 \
@@ -16,8 +17,8 @@ Environment="DOCKER_RUN_CMD=docker run \
   --env=MONGO_MAJOR=7.0 \
   --env=MONGO_VERSION=7.0.12 \
   --env=HOME=/data/db \
-  --volume=./data/db:{{dbPath}}/db \
-  --volume=./data/configdb:/{{dbPath}}/configdb \
+  --volume=./{{dbPath}}/db:/data/db \
+  --volume=./{{dbPath}}/configdb:/data/configdb \
   --volume=./data/configdb \
   --volume=/data/db \
   --network=bridge -p 27017:27017 \

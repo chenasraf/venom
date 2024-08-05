@@ -9,7 +9,7 @@
     "logs": "journalctl -f -u venom-bot.service",
     "build": "tsc && tsc-alias",
     "gen": "simple-scaffold -c scaffold.config.js -k",
-    "install-services": "scripts/install-services.zsh",
+    "install-services": "src/scripts/install-services.zsh",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "devDependencies": {
