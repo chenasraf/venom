@@ -6,7 +6,7 @@
     "start": "tsx src/index.ts",
     "dev": "nodemon --exec tsx src/index.ts",
     "service": "src/scripts/systemctl.zsh",
-    "logs": "journalctl -f -u venom-bot.service",
+    "logs": "journalctl -f -n 50 -u venom-bot.service",
     "build": "tsc && tsc-alias",
     "gen": "simple-scaffold -c scaffold.config.js -k",
     "install-services": "src/scripts/install-services.zsh",
