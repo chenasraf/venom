@@ -25,7 +25,8 @@ export default command({
     `\`${DEFAULT_COMMAND_PREFIX}chat save\` - backs up the brain immediately`,
     `\`${DEFAULT_COMMAND_PREFIX}chat size\` - shows the current brain size`,
     `\`${DEFAULT_COMMAND_PREFIX}chat <anything else>\` - chat with Venom and immediately get a reply.`,
-    `\`${DEFAULT_COMMAND_PREFIX}chat whitelist <add|remove> <guild|channel>\` - update whitelist for guild/channel.`,
+    `\`${DEFAULT_COMMAND_PREFIX}chat whitelist <get|add|remove> <guild|channel>\` - get/update whitelist for ` +
+      `guild/channel (see \`${DEFAULT_COMMAND_PREFIX}help whitelist\` for more information (admins only).`,
     `\`${CHAT_TRIGGERS[1]}hi!\` - You can also just prefix it with one of the chat prefixes to chat more naturally: \`${CHAT_TRIGGERS.join('`, `')}\`, `,
   ],
   execute: async (message, args) => {
