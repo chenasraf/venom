@@ -21,16 +21,15 @@ export default command({
     const data: HelpMessage[] = []
     const name = args[0]
 
-    const commandList = Object.values(commands())
-      .sort((a, b) => a.command.localeCompare(b.command))
-      .filter((c) => {
-        const nameMatches = name
-          ? c.command.toLowerCase() === name.toLowerCase() ||
-            c.aliases.some((a) => a.toLowerCase() === name.toLowerCase())
-          : true
-        const isGlobal = c.global ?? false
-        return [nameMatches, whitelisted || isGlobal].every(Boolean)
-      })
+    const rawList = Object.values(commands()).sort((a, b) => a.command.localeCompare(b.command))
+    const commandList = rawList.filter((c) => {
+      const nameMatches = name
+        ? c.command.toLowerCase() === name.toLowerCase() ||
+          c.aliases.some((a) => a.toLowerCase() === name.toLowerCase())
+        : true
+      const isGlobal = c.global ?? false
+      return [nameMatches, whitelisted || isGlobal].every(Boolean)
+    })
 
     for (const cmd of commandList) {
       let description = `\`${DEFAULT_COMMAND_PREFIX}${cmd.command}\``
@@ -53,16 +52,16 @@ export default command({
         description += `\n\t\t\tFor examples, use \`${DEFAULT_COMMAND_PREFIX}help ${cmd.command}\`.`
       }
 
-      data.push({ command: name, description })
+      data.push({ command: cmd.command, description })
+    }
+
+    if (!data.length) {
+      return message.reply(`I couldn't find any command with the name ${name}.`)
     }
 
     const helpIdx = data.findIndex((c) => c.command === 'help')
     const [helpCmd] = data.splice(helpIdx, 1)
     data.unshift(helpCmd)
-
-    if (!data.length) {
-      return message.reply(`I couldn't find any command with the name ${name}.`)
-    }
 
     if (name) {
       output += `Here's what I know about the ${name} command:`
