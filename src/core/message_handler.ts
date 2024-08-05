@@ -3,10 +3,13 @@ import { CHAT_TRIGGERS, COMMAND_TRIGGERS } from '@/env'
 import { parseArguments, parseCommand } from '@/core/commands'
 import { logger } from '@/core/logger'
 import { CHATTER_REPLY_CHANCE, trainMegahal } from '@/core/megahal'
+import { isWhitelisted } from '@/lib/blacklist'
+import { isAdministrator } from '@/utils/discord_utils'
 
 export async function handleMessage(message: Discord.Message) {
   // ignore bot/own messages
   if (message.author.bot) return
+  const whitelisted = await isWhitelisted('commands', message.guild!, message.channel)
 
   logger.debug(
     'Message received:',
@@ -30,6 +33,22 @@ export async function handleMessage(message: Discord.Message) {
       }
       const command = parseCommand(message.content)
       const [cmdName, ...args] = parseArguments(message.content)
+      if (!whitelisted && !command?.global) {
+        logger.debug(
+          'Command received in non-whitelisted channel/guild:',
+          message.channel.id,
+          'guild:',
+          message.guild!.id,
+        )
+        return
+      }
+      if (command?.adminOnly) {
+        const isAdmin = await isAdministrator(message.member!)
+        if (!isAdmin) {
+          logger.debug('Non-administrator tried to use admin command:', message.author.id)
+          return
+        }
+      }
       if (command) {
         command.execute(message, args)
       } else {

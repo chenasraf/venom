@@ -57,7 +57,10 @@ export function isMuted() {
 
 export async function trainMegahal(message: Discord.Message, replyChance: number) {
   const whitelisted = await isWhitelisted('chat', message.guild!, message.channel)
-  if (!whitelisted) return
+  if (!whitelisted) {
+    logger.debug('Not whitelisted, ignoring message:', JSON.stringify(message.content))
+    return
+  }
 
   const key = msgCountKey(message)
   msgCount[key]! += 1

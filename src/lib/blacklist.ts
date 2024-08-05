@@ -17,26 +17,45 @@ export async function isWhitelisted(
   return channelValue ?? guildValue
 }
 
-export async function whitelistChannel(
+export async function whitelist(prefix: string, guild: Discord.Guild, channel?: Discord.Channel) {
+  const key = channel
+    ? `${prefix}.whitelist.${guild.id}.${channel.id}`
+    : `${prefix}.whitelist.${guild.id}`
+  return setSetting(key, true)
+}
+
+export async function blacklist(prefix: string, guild: Discord.Guild, channel?: Discord.Channel) {
+  const key = channel
+    ? `${prefix}.whitelist.${guild.id}.${channel.id}`
+    : `${prefix}.whitelist.${guild.id}`
+  return setSetting(key, false)
+}
+
+export async function manipulateWhitelist(
   prefix: string,
-  guild: Discord.Guild,
-  channel: Discord.Channel,
-) {
-  return setSetting(`${prefix}.whitelist.${guild.id}.${channel.id}`, true)
-}
+  action: 'add' | 'remove' | undefined,
+  type: 'guild' | 'channel' | undefined,
+  gulid: Discord.Guild,
+  channel?: Discord.Channel,
+): Promise<string> {
+  if (!action || !['add', 'remove'].includes(action)) {
+    return 'You need to provide an action to whitelist, either "add" or "remove"'
+  }
+  if (!type || !['guild', 'channel'].includes(type)) {
+    return 'You need to provide a type to whitelist, either "guild" or "channel"'
+  }
 
-export async function whitelistGuild(prefix: string, guild: Discord.Guild) {
-  return setSetting(`${prefix}.whitelist.${guild.id}`, true)
-}
+  const actionMap = {
+    add: whitelist,
+    remove: blacklist,
+  } as const
 
-export async function blacklistChannel(
-  prefix: string,
-  guild: Discord.Guild,
-  channel: Discord.Channel,
-) {
-  return setSetting(`${prefix}.whitelist.${guild.id}.${channel.id}`, false)
-}
-
-export async function blacklistGuild(prefix: string, guild: Discord.Guild) {
-  return setSetting(`${prefix}.whitelist.${guild.id}`, false)
+  if (type === 'guild') {
+    actionMap[action](prefix, gulid)
+    return `Guild ${gulid.toString()} ${action === 'add' ? 'whitelisted' : 'blacklisted'} for ${prefix}`
+  } else {
+    if (!channel) return 'You need to provide a channel to whitelist'
+    actionMap[action](prefix, gulid, channel)
+    return `Channel ${channel.toString()} on ${gulid.toString()} ${action === 'add' ? 'whitelisted' : 'blacklisted'} for ${prefix}`
+  }
 }

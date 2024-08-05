@@ -9,15 +9,7 @@ import {
   setMuted,
 } from '@/core/megahal'
 import { CHAT_TRIGGERS, DEFAULT_COMMAND_PREFIX } from '@/env'
-import {
-  blacklistChannel,
-  blacklistGuild,
-  isBlacklisted,
-  isWhitelisted,
-  whitelistChannel,
-  whitelistGuild,
-} from '@/lib/blacklist'
-import { setSetting } from '@/lib/settings'
+import { isWhitelisted, manipulateWhitelist } from '@/lib/blacklist'
 
 export default command({
   command: 'chat',
@@ -33,6 +25,7 @@ export default command({
     `\`${DEFAULT_COMMAND_PREFIX}chat save\` - backs up the brain immediately`,
     `\`${DEFAULT_COMMAND_PREFIX}chat size\` - shows the current brain size`,
     `\`${DEFAULT_COMMAND_PREFIX}chat <anything else>\` - chat with Venom and immediately get a reply.`,
+    `\`${DEFAULT_COMMAND_PREFIX}chat whitelist <add|remove> <guild|channel>\` - update whitelist for guild/channel.`,
     `\`${CHAT_TRIGGERS[1]}hi!\` - You can also just prefix it with one of the chat prefixes to chat more naturally: \`${CHAT_TRIGGERS.join('`, `')}\`, `,
   ],
   execute: async (message, args) => {
@@ -43,43 +36,11 @@ export default command({
     const [sub] = args
     switch (sub.toLowerCase()) {
       case 'whitelist': {
-        const guild = message.guild!
-        const channel = message.channel!
-        const type = args[1]?.trim().toLowerCase()
-        if (!type || !['guild', 'channel'].includes(type)) {
-          return message.reply(
-            'You need to provide a type to whitelist, either "guild" or "channel"',
-          )
-        }
-        if (type === 'guild') {
-          await whitelistGuild('chat', guild)
-          logger.info(`Whitelisted guild ${guild.id}`)
-          message.reply(`Guild ${guild.toString()} whitelisted`)
-        } else {
-          logger.info(`Whitelisting channel ${channel.id} in guild ${guild.id}`)
-          await whitelistChannel('chat', guild, channel)
-          message.reply(`Channel ${channel.toString()} on ${guild.toString()} whitelisted`)
-        }
-        break
-      }
-      case 'blacklist': {
-        const guild = message.guild!
-        const channel = message.channel!
-        const type = args[1]?.trim().toLowerCase()
-        if (!type || !['guild', 'channel'].includes(type)) {
-          return message.reply(
-            'You need to provide a type to blacklist, either "guild" or "channel"',
-          )
-        }
-        if (type === 'guild') {
-          await blacklistGuild('chat', guild)
-          logger.info(`Blacklisted guild ${guild.id}`)
-          message.reply(`Guild ${guild.toString()} blacklisted`)
-        } else {
-          logger.info(`Blacklisting channel ${channel.id} in guild ${guild.id}`)
-          await blacklistChannel('chat', guild, channel)
-          message.reply(`Channel ${channel.toString()} on ${guild.toString()} blacklisted`)
-        }
+        const action = args[1]?.trim().toLowerCase() as 'add' | 'remove' | undefined
+        const type = args[2]?.trim().toLowerCase() as 'guild' | 'channel' | undefined
+        message.reply(
+          await manipulateWhitelist('commands', action, type, message.guild!, message.channel),
+        )
         break
       }
       case 'mute':

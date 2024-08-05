@@ -2,6 +2,7 @@ import Discord from 'discord.js'
 import { command, commands } from '@/core/commands'
 import { DEFAULT_COMMAND_PREFIX } from '@/env'
 import { logger } from '@/core/logger'
+import { isWhitelisted } from '@/lib/blacklist'
 
 interface HelpMessage {
   command: string
@@ -13,17 +14,21 @@ export default command({
   aliases: ['h'],
   description: 'Lists available commands and their usage.',
   examples: ['`!help`', '`!help ping`', '`!help chat`'],
+  global: true,
   async execute(message, args) {
+    const whitelisted = await isWhitelisted('commands', message.guild!, message.channel)
     let output = ''
     const data: HelpMessage[] = []
     const name = args[0]
 
-    const commandList = Object.values(commands()).filter((c) =>
-      name
+    const commandList = Object.values(commands()).filter((c) => {
+      const nameMatches = name
         ? c.command.toLowerCase() === name.toLowerCase() ||
-          c.aliases.some((a) => a.toLowerCase() === name.toLowerCase())
-        : true,
-    )
+        c.aliases.some((a) => a.toLowerCase() === name.toLowerCase())
+        : true
+      const isGlobal = c.global ?? false
+      return [nameMatches, whitelisted || isGlobal].every(Boolean)
+    })
 
     for (const cmd of commandList) {
       let description = `\`${DEFAULT_COMMAND_PREFIX}${cmd.command}\``
