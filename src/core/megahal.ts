@@ -16,7 +16,10 @@ let totalMsgCount = 0
 export const CHATTER_REPLY_CHANCE = 0.02
 
 logger.log('Initializing MegaHAL')
+const start = Date.now()
 export const megahal = new MegaHAL()
+const duration = Date.now() - start
+logger.log('MegaHAL initialized in', duration, 'ms')
 loadBrain()
 
 async function loadBrain() {
