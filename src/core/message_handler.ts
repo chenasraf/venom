@@ -52,7 +52,9 @@ export async function handleMessage(message: Discord.Message) {
       if (command) {
         command.execute(message, args)
       } else {
-        message.reply(`Command not found: ${cmdName}`)
+        if (cmdName) {
+          message.reply(`Command not found: ${cmdName}`)
+        }
       }
     }
   }
