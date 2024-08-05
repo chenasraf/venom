@@ -1,0 +1,15 @@
+[Unit]
+Description=Venom Bot
+After=network.target
+
+[Service]
+WorkingDirectory=/root/apps/venom
+ExecStart=/usr/local/bin/pnpm start
+ExecStop=/bin/kill -SIGINT $MAINPID
+Restart=on-failure
+RestartSec=5
+User=root
+
+[Install]
+WantedBy=multi-user.target
+

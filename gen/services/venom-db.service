@@ -1,0 +1,36 @@
+[Unit]
+Description=Venom Mongo
+After=docker.service
+Requires=docker.service
+
+[Service]
+Environment="DOCKER_RUN_CMD=docker run \
+  --name venom-mongo \
+  --hostname=2d2cb1232ad1 \
+  --mac-address=02:42:ac:11:00:02 \
+  --env=PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin \
+  --env=GOSU_VERSION=1.17 \
+  --env=JSYAML_VERSION=3.13.1 \
+  --env=MONGO_PACKAGE=mongodb-org \
+  --env=MONGO_REPO=repo.mongodb.org \
+  --env=MONGO_MAJOR=7.0 \
+  --env=MONGO_VERSION=7.0.12 \
+  --env=HOME=/data/db \
+  --volume=./data/db:{{dbPath}}/db \
+  --volume=./data/configdb:/{{dbPath}}/configdb \
+  --volume=./data/configdb \
+  --volume=/data/db \
+  --network=bridge -p 27017:27017 \
+  --restart=no \
+  --label='org.opencontainers.image.ref.name=ubuntu' \
+  --label='org.opencontainers.image.version=22.04' \
+  --runtime=runc -d mongo:latest"
+
+ExecStart=/bin/bash -c "$DOCKER_RUN_CMD"
+ExecStop=/usr/bin/docker stop venom-mongo
+ExecStopPost=/usr/bin/docker rm venom-mongo
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target
