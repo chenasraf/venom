@@ -9,7 +9,7 @@ export default command({
   global: true,
   adminOnly: true,
   async execute(message, args) {
-    const action = args[0]?.trim().toLowerCase() as 'add' | 'remove' | undefined
+    const action = args[0]?.trim().toLowerCase() as 'get' | 'add' | 'remove' | undefined
     const type = args[1]?.trim().toLowerCase() as 'guild' | 'channel' | undefined
     return message.reply(
       await manipulateWhitelist('commands', action, type, message.guild!, message.channel),

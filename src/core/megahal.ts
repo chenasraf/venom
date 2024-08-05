@@ -41,12 +41,15 @@ export async function saveBrain() {
   return success
 }
 
+// eslint-disable-next-line no-unused-vars
+export async function getMegahalBrainSize(returnType: 'string'): Promise<string>
+// eslint-disable-next-line no-unused-vars
+export async function getMegahalBrainSize(returnType: 'number'): Promise<number>
 export async function getMegahalBrainSize(
-  type: 'number' | 'string',
-): Promise<typeof type extends 'number' ? number : string> {
+  returnType: 'number' | 'string',
+): Promise<string | number> {
   const size = await getFileSize(BRAIN_FILE)
-  const sizeStr = formatBytes(size)
-  return type === 'number' ? (size as never) : (sizeStr as never)
+  return returnType === 'number' ? size : formatBytes(size)
 }
 
 export function setMuted(value: boolean) {

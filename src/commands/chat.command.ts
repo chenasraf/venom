@@ -36,7 +36,7 @@ export default command({
     const [sub] = args
     switch (sub.toLowerCase()) {
       case 'whitelist': {
-        const action = args[1]?.trim().toLowerCase() as 'add' | 'remove' | undefined
+        const action = args[1]?.trim().toLowerCase() as 'get' | 'add' | 'remove' | undefined
         const type = args[2]?.trim().toLowerCase() as 'guild' | 'channel' | undefined
         message.reply(
           await manipulateWhitelist('chat', action, type, message.guild!, message.channel),
