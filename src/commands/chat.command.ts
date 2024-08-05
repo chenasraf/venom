@@ -10,6 +10,7 @@ import {
 } from '@/core/megahal'
 import { CHAT_TRIGGERS, DEFAULT_COMMAND_PREFIX } from '@/env'
 import { isWhitelisted, manipulateWhitelist } from '@/lib/blacklist'
+import { formatBytes } from '@/utils/string_utils'
 
 export default command({
   command: 'chat',
@@ -54,7 +55,8 @@ export default command({
       case 'save': {
         const success = await saveBrain()
         if (success) {
-          message.reply('Brain saved successfully')
+          const size = await getMegahalBrainSize('string')
+          message.reply(`Brain saved successfully. File size: ${size}`)
         } else {
           message.reply('Failed to save brain')
         }
