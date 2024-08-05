@@ -5,6 +5,7 @@ import { CHAT_TRIGGERS } from '@/env'
 import path from 'node:path'
 import { fileExists, getFileSize } from '@/utils/file_utils'
 import { formatBytes } from '@/utils/string_utils'
+import { isWhitelisted } from '@/lib/blacklist'
 let muted = false
 const BRAIN_FILE = path.resolve(process.cwd(), 'data', 'brain.dat')
 // every 20 messages
@@ -54,7 +55,10 @@ export function isMuted() {
   return muted
 }
 
-export function trainMegahal(message: Discord.Message, replyChance: number) {
+export async function trainMegahal(message: Discord.Message, replyChance: number) {
+  const whitelisted = await isWhitelisted('chat', message.guild!, message.channel)
+  if (!whitelisted) return
+
   const key = msgCountKey(message)
   msgCount[key]! += 1
   totalMsgCount += 1
@@ -65,12 +69,12 @@ export function trainMegahal(message: Discord.Message, replyChance: number) {
   )
   logger.debug('Learning from message:', JSON.stringify(input))
 
-  const response = megahal.reply(input)
-
   if (totalMsgCount >= SAVE_RATE) {
-    megahal.save(BRAIN_FILE).then(() => logger.log('Brain saved to', BRAIN_FILE))
+    saveBrain()
     totalMsgCount = 0
   }
+
+  const response = megahal.reply(input)
 
   if (Math.random() < replyChance && !isMuted()) {
     logger.log('Chatter chance reached, replying:', JSON.stringify(response))

@@ -4,7 +4,7 @@ import { parseArguments, parseCommand } from '@/core/commands'
 import { logger } from '@/core/logger'
 import { CHATTER_REPLY_CHANCE, trainMegahal } from '@/core/megahal'
 
-export function handleMessage(message: Discord.Message) {
+export async function handleMessage(message: Discord.Message) {
   // ignore bot/own messages
   if (message.author.bot) return
 
@@ -13,6 +13,10 @@ export function handleMessage(message: Discord.Message) {
     JSON.stringify(message.content),
     'from',
     '@' + message.author.username,
+    'in',
+    message.channel.id,
+    `on guild`,
+    message.guild?.id,
   )
   let triggered = false
 
@@ -20,6 +24,10 @@ export function handleMessage(message: Discord.Message) {
     if (message.content.startsWith(prefix)) {
       triggered = true
       logger.log('Parsing as command:', JSON.stringify(message.content))
+      const [commandName] = parseArguments(message.content)
+      if (!commandName) {
+        return
+      }
       const command = parseCommand(message.content)
       const [cmdName, ...args] = parseArguments(message.content)
       if (command) {

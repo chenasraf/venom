@@ -9,6 +9,15 @@ import {
   setMuted,
 } from '@/core/megahal'
 import { CHAT_TRIGGERS, DEFAULT_COMMAND_PREFIX } from '@/env'
+import {
+  blacklistChannel,
+  blacklistGuild,
+  isBlacklisted,
+  isWhitelisted,
+  whitelistChannel,
+  whitelistGuild,
+} from '@/lib/blacklist'
+import { setSetting } from '@/lib/settings'
 
 export default command({
   command: 'chat',
@@ -33,6 +42,46 @@ export default command({
     }
     const [sub] = args
     switch (sub.toLowerCase()) {
+      case 'whitelist': {
+        const guild = message.guild!
+        const channel = message.channel!
+        const type = args[1]?.trim().toLowerCase()
+        if (!type || !['guild', 'channel'].includes(type)) {
+          return message.reply(
+            'You need to provide a type to whitelist, either "guild" or "channel"',
+          )
+        }
+        if (type === 'guild') {
+          await whitelistGuild('chat', guild)
+          logger.info(`Whitelisted guild ${guild.id}`)
+          message.reply(`Guild ${guild.toString()} whitelisted`)
+        } else {
+          logger.info(`Whitelisting channel ${channel.id} in guild ${guild.id}`)
+          await whitelistChannel('chat', guild, channel)
+          message.reply(`Channel ${channel.toString()} on ${guild.toString()} whitelisted`)
+        }
+        break
+      }
+      case 'blacklist': {
+        const guild = message.guild!
+        const channel = message.channel!
+        const type = args[1]?.trim().toLowerCase()
+        if (!type || !['guild', 'channel'].includes(type)) {
+          return message.reply(
+            'You need to provide a type to blacklist, either "guild" or "channel"',
+          )
+        }
+        if (type === 'guild') {
+          await blacklistGuild('chat', guild)
+          logger.info(`Blacklisted guild ${guild.id}`)
+          message.reply(`Guild ${guild.toString()} blacklisted`)
+        } else {
+          logger.info(`Blacklisting channel ${channel.id} in guild ${guild.id}`)
+          await blacklistChannel('chat', guild, channel)
+          message.reply(`Channel ${channel.toString()} on ${guild.toString()} blacklisted`)
+        }
+        break
+      }
       case 'mute':
         setMuted(true)
         message.reply('I am now muted')
@@ -58,9 +107,10 @@ export default command({
 
       default: {
         const input = args.join(' ')
-        logger.log('Generating response for', JSON.stringify(input))
-        const response = megahal.reply(input)
-        if (!isMuted()) {
+        const whitelisted = await isWhitelisted('chat', message.guild!, message.channel)
+        if (!isMuted() && whitelisted) {
+          logger.log('Generating response for', JSON.stringify(input))
+          const response = megahal.reply(input)
           message.reply(response)
         }
       }
