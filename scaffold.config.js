@@ -21,6 +21,8 @@ module.exports = {
     data: {
       appRoot: process.env.APP_ROOT,
       dbPath: path.resolve(process.env.APP_ROOT ?? process.cwd(), process.env.DB_PATH),
+      dbUser: process.env.DB_USER,
+      dbPass: process.env.DB_PASS,
     },
     name: '-',
   },

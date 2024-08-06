@@ -9,6 +9,8 @@ WorkingDirectory={{appRoot}}
 ExecStart=/usr/bin/docker run --name venom-db \
   --volume {{dbPath}}/db:/data/db \
   --volume {{dbPath}}/configdb:/data/configdb \
+  -e MONGO_INITDB_ROOT_USERNAME={{dbUser}} \
+  -e MONGO_INITDB_ROOT_PASSWORD={{dbPass}} \
   -p 27017:27017 \
   mongo:latest
 

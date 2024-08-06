@@ -83,6 +83,8 @@ export async function trainMegahal(message: Discord.Message, replyChance: number
     totalMsgCount = 0
   }
 
+  logger.debug('Total unsaved messages:', totalMsgCount)
+
   const response = megahal.reply(input)
 
   if (Math.random() < replyChance && !isMuted()) {
