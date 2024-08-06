@@ -6,9 +6,13 @@ Requires=docker.service
 [Service]
 WorkingDirectory={{appRoot}}
 
-ExecStart=/usr/bin/docker run --name venom-mongo --rm --volume={{dbRoot}}/db:/data/db --volume={{dbRoot}}/configdb:/data/configdb mongo:latest
-ExecStop=/usr/bin/docker stop venom-mongo
-ExecStopPost=/usr/bin/docker rm venom-mongo
+ExecStart=/usr/bin/docker run --name venom-db -d \
+  --volume {{dbRoot}}/db:/data/db \
+  --volume {{dbRoot}}/configdb:/data/configdb \
+  mongo:latest
+
+ExecStop=/usr/bin/docker stop venom-db
+ExecStopPost=/usr/bin/docker rm venom-db
 Restart=on-failure
 RestartSec=5
 
