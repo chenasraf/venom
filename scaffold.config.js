@@ -19,8 +19,8 @@ module.exports = {
     templates: ['gen/services'],
     subdir: false,
     data: {
-      dbPath: process.env.DB_PATH,
       appRoot: process.env.APP_ROOT,
+      dbPath: path.resolve(process.env.APP_ROOT ?? process.cwd(), process.env.DB_PATH),
     },
     name: '-',
   },

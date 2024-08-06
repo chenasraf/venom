@@ -6,11 +6,11 @@ export async function isWhitelisted(
   guild: Discord.Guild,
   channel?: Discord.Channel,
 ): Promise<boolean> {
-  const guildValue = await getSetting<boolean | undefined>(`${prefix}.whitelist.${guild.id}`)
-  if (guildValue === false) {
-    return false
-  }
   return true
+  // const guildValue = await getSetting<boolean | undefined>(`${prefix}.whitelist.${guild.id}`)
+  // if (guildValue === false) {
+  //   return false
+  // }
   // if (!channel) return guildValue ?? false
   // const channelValue = await getSetting<boolean | undefined>(
   //   `${prefix}.whitelist.${guild.id}.${channel.id}`,
