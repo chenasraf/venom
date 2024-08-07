@@ -48,12 +48,12 @@ export default command({
 
     if (value == null) {
       const value = await getSetting(key)
-      return message.reply(`\`${key}\` is set to \`${value}\``)
+      return message.reply(`\`${key}\` is set to \`${JSON.stringify(value)}\``)
     }
 
     if (!force) {
       const exists = await getSetting(key)
-      if (!exists) {
+      if (exists === undefined) {
         return message.reply(`Key \`${key}\` does not exist. Use \`-f\` to force setting this key`)
       }
     }
