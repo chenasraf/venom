@@ -6,6 +6,7 @@ import path from 'node:path'
 import { fileExists, getFileSize } from '@/utils/file_utils'
 import { formatBytes } from '@/utils/string_utils'
 import { isWhitelisted } from '@/lib/whitelist'
+import { getMentionUsername } from '@/utils/discord_utils'
 let muted = false
 const BRAIN_FILE = path.resolve(process.cwd(), 'data', 'brain.dat')
 // every 20 messages
@@ -75,7 +76,7 @@ export async function trainMegahal(message: Discord.Message, replyChance: number
     (msg, trigger) =>
       msg.toLowerCase().startsWith(trigger.toLowerCase()) ? msg.substring(trigger.length) : msg,
     message.content,
-  )
+  ).replace(/<@!?(\d+)>/g, (_, id) => getMentionUsername(message, id))
   logger.debug('Learning from message:', JSON.stringify(input))
 
   if (totalMsgCount >= SAVE_RATE) {
