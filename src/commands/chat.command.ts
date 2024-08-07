@@ -10,6 +10,7 @@ import {
 } from '@/core/megahal'
 import { CHAT_TRIGGERS, DEFAULT_COMMAND_PREFIX } from '@/env'
 import { isWhitelisted, manipulateWhitelist } from '@/lib/blacklist'
+import { isAdministrator } from '@/utils/discord_utils'
 
 export default command({
   command: 'chat',
@@ -53,6 +54,11 @@ export default command({
         message.reply('I am now unmuted')
         break
       case 'save': {
+        const isAdmin = await isAdministrator(message.member!)
+        if (!isAdmin) {
+          message.reply('You are not allowed to do that!')
+          break
+        }
         const success = await saveBrain()
         if (success) {
           const size = await getMegahalBrainSize('string')
