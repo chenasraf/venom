@@ -3,6 +3,7 @@ import { DISCORD_TOKEN } from '@/env'
 import { loadCommands } from '@/core/commands'
 import { logger } from '@/core/logger'
 import { handleMessage } from '@/core/message_handler'
+import { saveBrain } from '@/core/megahal'
 
 const client = new Client({
   intents: [
@@ -22,3 +23,13 @@ client.once(Events.ClientReady, (readyClient) => {
 })
 
 client.login(DISCORD_TOKEN)
+
+function shutdown(signal: string) {
+  return async () => {
+    logger.warn(`Received ${signal}, shutting down...`)
+    await saveBrain()
+  }
+}
+
+process.once('SIGINT', shutdown('SIGINT'))
+process.once('SIGTERM', shutdown('SIGTERM'))
