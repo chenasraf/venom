@@ -26,9 +26,10 @@ export default command({
     `\`${DEFAULT_COMMAND_PREFIX}chat save\` - backs up the brain immediately`,
     `\`${DEFAULT_COMMAND_PREFIX}chat size\` - shows the current brain size`,
     `\`${DEFAULT_COMMAND_PREFIX}chat <anything else>\` - chat with Venom and immediately get a reply.`,
+    `\`${CHAT_TRIGGERS[1]}hi!\` - You can also just prefix it with one of the chat prefixes to chat more naturally: \`${CHAT_TRIGGERS.join('`, `')}\`, `,
     `\`${DEFAULT_COMMAND_PREFIX}chat whitelist <get|add|remove> <guild|channel>\` - get/update whitelist for ` +
       `guild/channel (see \`${DEFAULT_COMMAND_PREFIX}help whitelist\` for more information (admins only).`,
-    `\`${CHAT_TRIGGERS[1]}hi!\` - You can also just prefix it with one of the chat prefixes to chat more naturally: \`${CHAT_TRIGGERS.join('`, `')}\`, `,
+    `\`${DEFAULT_COMMAND_PREFIX}chat train <lines>\` - feed megahal multiple lines to train (admins only)`,
   ],
   execute: async (message, args) => {
     if (!args.length) {
@@ -66,6 +67,17 @@ export default command({
         } else {
           message.reply('Failed to save brain')
         }
+        break
+      }
+      case 'train': {
+        const isAdmin = await isAdministrator(message.member!)
+        if (!isAdmin) {
+          message.reply('You are not allowed to do that!')
+          break
+        }
+        const lines = args.slice(1).join(' ').split('\n')
+        await megahal.train(lines)
+        message.reply('Trained successfully')
         break
       }
       case 'size': {
