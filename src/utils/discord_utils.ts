@@ -1,5 +1,7 @@
 import Discord, { PermissionsBitField } from 'discord.js'
 
+export const MENTION_REGEX = /<@!?(\d+)>/g
+
 export async function isAdministrator(member: Discord.GuildMember): Promise<boolean> {
   // TODO check role permissions
   return member.permissions.has(PermissionsBitField.Flags.ManageGuild)
@@ -24,5 +26,5 @@ export function getMentionUsername(message: Discord.Message, userId: string, cle
 }
 
 export function replaceUserMentions(message: Discord.Message, content: string): string {
-  return content.replace(/<@!?(\d+)>/g, (_, id) => getMentionUsername(message, id))
+  return content.replace(MENTION_REGEX, (_, id) => getMentionUsername(message, id))
 }
