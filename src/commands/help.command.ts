@@ -3,6 +3,7 @@ import { command, commands } from '@/core/commands'
 import { DEFAULT_COMMAND_PREFIX } from '@/env'
 import { logger } from '@/core/logger'
 import { isWhitelisted } from '@/lib/whitelist'
+import { isAdministrator } from '@/utils/discord_utils'
 
 interface HelpMessage {
   command: string
@@ -17,6 +18,7 @@ export default command({
   global: true,
   async execute(message, args) {
     const whitelisted = await isWhitelisted('commands', message.guild!, message.channel)
+    const isAdmin = await isAdministrator(message.member!)
     let output = ''
     const data: HelpMessage[] = []
     const name = args[0]
@@ -28,7 +30,8 @@ export default command({
           c.aliases.some((a) => a.toLowerCase() === name.toLowerCase())
         : true
       const isGlobal = c.global ?? false
-      return [nameMatches, whitelisted || isGlobal].every(Boolean)
+      const isPermitted = !c.adminOnly || isAdmin
+      return [nameMatches, whitelisted || isGlobal, isPermitted].every(Boolean)
     })
 
     for (const cmd of commandList) {
