@@ -6,7 +6,7 @@ import path from 'node:path'
 import { fileExists, getFileSize } from '@/utils/file_utils'
 import { formatBytes } from '@/utils/string_utils'
 import { isWhitelisted } from '@/lib/whitelist'
-import { getMentionUsername } from '@/utils/discord_utils'
+import { replaceUserMentions } from '@/utils/discord_utils'
 let muted = false
 const BRAIN_FILE = path.resolve(process.cwd(), 'data', 'brain.dat')
 // every 20 messages
@@ -35,7 +35,8 @@ async function loadBrain() {
 export async function saveBrain() {
   const success = await megahal.save(BRAIN_FILE)
   if (success) {
-    logger.log('Brain saved to', BRAIN_FILE)
+    const size = await getMegahalBrainSize('string')
+    logger.log('Brain saved to', BRAIN_FILE, 'size:', size)
   } else {
     logger.error('Failed to save brain')
   }
@@ -72,11 +73,12 @@ export async function trainMegahal(message: Discord.Message, replyChance: number
   const key = msgCountKey(message)
   msgCount[key]! += 1
   totalMsgCount += 1
-  const input = CHAT_TRIGGERS.reduce(
+  const unprefixedInput = CHAT_TRIGGERS.reduce(
     (msg, trigger) =>
       msg.toLowerCase().startsWith(trigger.toLowerCase()) ? msg.substring(trigger.length) : msg,
     message.content,
-  ).replace(/<@!?(\d+)>/g, (_, id) => getMentionUsername(message, id))
+  )
+  const input = replaceUserMentions(message, unprefixedInput)
   logger.debug('Learning from message:', JSON.stringify(input))
 
   if (totalMsgCount >= SAVE_RATE) {

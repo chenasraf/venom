@@ -22,3 +22,7 @@ export function getMentionUsername(message: Discord.Message, userId: string, cle
   }
   return displayName
 }
+
+export function replaceUserMentions(message: Discord.Message, content: string): string {
+  return content.replace(/<@!?(\d+)>/g, (_, id) => getMentionUsername(message, id))
+}
