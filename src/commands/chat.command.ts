@@ -75,7 +75,12 @@ export default command({
           message.reply('You are not allowed to do that!')
           break
         }
-        const lines = args.slice(1).join(' ').split('\n')
+        const lines = args
+          .slice(1)
+          .join(' ')
+          .split('\n')
+          .map((x) => x.trim())
+          .filter(Boolean)
         await megahal.train(lines)
         message.reply('Trained successfully')
         break
