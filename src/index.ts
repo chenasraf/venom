@@ -24,12 +24,19 @@ client.once(Events.ClientReady, (readyClient) => {
 
 client.login(DISCORD_TOKEN)
 
-function shutdown(signal: string) {
-  return async () => {
+function terminator(signal: string) {
+  process.once(signal, async (code: string | number | Error) => {
     logger.warn(`Received ${signal}, shutting down...`)
     await saveBrain()
-  }
+    process.exit(isNaN(+code) ? 1 : +code)
+  })
 }
 
-process.once('SIGINT', shutdown('SIGINT'))
-process.once('SIGTERM', shutdown('SIGTERM'))
+// prettier-ignore
+const signals = [
+  'SIGHUP', 'SIGINT', 'SIGQUIT', 'SIGILL', 'SIGTRAP', 'SIGABRT', 'SIGBUS', 'SIGFPE', 'SIGUSR1',
+  'SIGSEGV', 'SIGUSR2', 'SIGTERM', 'beforeExit', 'exit',
+]
+for (const sig of signals) {
+  terminator(sig)
+}
