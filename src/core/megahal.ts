@@ -5,7 +5,7 @@ import { CHAT_TRIGGERS } from '@/env'
 import path from 'node:path'
 import { fileExists, getFileSize } from '@/utils/file_utils'
 import { formatBytes } from '@/utils/string_utils'
-import { isWhitelisted } from '@/lib/blacklist'
+import { isWhitelisted } from '@/lib/whitelist'
 let muted = false
 const BRAIN_FILE = path.resolve(process.cwd(), 'data', 'brain.dat')
 // every 20 messages

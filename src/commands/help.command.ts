@@ -2,7 +2,7 @@ import Discord from 'discord.js'
 import { command, commands } from '@/core/commands'
 import { DEFAULT_COMMAND_PREFIX } from '@/env'
 import { logger } from '@/core/logger'
-import { isWhitelisted } from '@/lib/blacklist'
+import { isWhitelisted } from '@/lib/whitelist'
 
 interface HelpMessage {
   command: string

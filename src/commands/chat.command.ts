@@ -9,7 +9,7 @@ import {
   setMuted,
 } from '@/core/megahal'
 import { CHAT_TRIGGERS, DEFAULT_COMMAND_PREFIX } from '@/env'
-import { isWhitelisted, manipulateWhitelist } from '@/lib/blacklist'
+import { isWhitelisted, manipulateWhitelist } from '@/lib/whitelist'
 import { isAdministrator } from '@/utils/discord_utils'
 
 export default command({

@@ -1,6 +1,6 @@
 import { command } from '@/core/commands'
 import { DEFAULT_COMMAND_PREFIX } from '@/env'
-import { manipulateWhitelist } from '@/lib/blacklist'
+import { manipulateWhitelist } from '@/lib/whitelist'
 
 export default command({
   command: 'whitelist',
