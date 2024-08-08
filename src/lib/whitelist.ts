@@ -55,7 +55,7 @@ export async function manipulateWhitelist(
       guild!,
       type === 'channel' ? channel : undefined,
     )
-    const suffix = `is **${whitelisted ? 'whitelisted' : 'not whitelisted'}** for commands.`
+    const suffix = `is **${whitelisted ? 'whitelisted' : 'not whitelisted'}** for ${prefix}.`
     if (type === 'guild') {
       return `The guild ${guild!.toString()} ${suffix}`
     } else {
