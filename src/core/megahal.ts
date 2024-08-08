@@ -7,6 +7,8 @@ import { fileExists, getFileSize } from '@/utils/file_utils'
 import { formatBytes } from '@/utils/string_utils'
 import { isWhitelisted } from '@/lib/whitelist'
 import { replaceUserMentions } from '@/utils/discord_utils'
+import '@/lib/venom-personality'
+
 let muted = false
 const BRAIN_FILE = path.resolve(process.cwd(), 'data', 'brain.dat')
 // every 20 messages
@@ -18,7 +20,7 @@ export const CHATTER_REPLY_CHANCE = 0.02
 
 logger.log('Initializing MegaHAL')
 const start = Date.now()
-export const megahal = new MegaHAL()
+export const megahal = new MegaHAL('venom')
 const duration = Date.now() - start
 logger.log('MegaHAL initialized in', duration, 'ms')
 loadBrain()
