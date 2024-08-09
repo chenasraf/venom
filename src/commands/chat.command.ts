@@ -1,7 +1,7 @@
 import { command } from '@/core/commands'
 import { logger } from '@/core/logger'
 import {
-  CHATTER_REPLY_CHANCE,
+  chatterChance,
   getMegahalBrainSize,
   isMuted,
   megahal,
@@ -16,8 +16,8 @@ export default command({
   command: 'chat',
   aliases: ['c'],
   description:
-    `Manage chatting with Venom. Venom will have a ${CHATTER_REPLY_CHANCE * 100}% (around every ` +
-    `${Math.round(1 / CHATTER_REPLY_CHANCE)} messages) chance to reply to any incoming message on ` +
+    `Manage chatting with Venom. Venom will have a ${chatterChance * 100}% (around every ` +
+    `${Math.round(1 / chatterChance)} messages) chance to reply to any incoming message on ` +
     `a channel unless muted. To change this value, contact the one of the server staff.\n` +
     'Muting completely disables chatting, to avoid bugs relating to infinite triggers, or any other reason.',
   examples: [

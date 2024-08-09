@@ -8,15 +8,25 @@ import { formatBytes } from '@/utils/string_utils'
 import { isWhitelisted } from '@/lib/whitelist'
 import { replaceUserMentions } from '@/utils/discord_utils'
 import '@/lib/venom-personality'
+import { getSetting } from '@/lib/settings'
+
+//--------------------------------------------------------------------------------
+// Consts
+//--------------------------------------------------------------------------------
+
+const BRAIN_FILE = path.resolve(process.cwd(), 'data', 'brain.dat')
+const DEFAULT_SAVE_RATE = 20
+const DEFAULT_CHATTER_CHANCE = 0.02
+
+//--------------------------------------------------------------------------------
+// Bot settings
+//--------------------------------------------------------------------------------
 
 let muted = false
-const BRAIN_FILE = path.resolve(process.cwd(), 'data', 'brain.dat')
-// every 20 messages
-const SAVE_RATE = 20
 const msgCount: Record<string, number> = {}
+let saveRate: number = 0
 let totalMsgCount = 0
-// chance to reply - 0.02 ~ every 50 messages
-export const CHATTER_REPLY_CHANCE = 0.02
+export let chatterChance: number = DEFAULT_CHATTER_CHANCE
 
 logger.log('Initializing MegaHAL')
 const start = Date.now()
@@ -26,6 +36,9 @@ logger.log('MegaHAL initialized in', duration, 'ms')
 loadBrain()
 
 async function loadBrain() {
+  saveRate = (await getSetting<number>('chat.brainSaveRate')) ?? DEFAULT_SAVE_RATE
+  chatterChance = (await getSetting<number>('chat.chatterChance')) ?? DEFAULT_CHATTER_CHANCE
+
   const exists = await fileExists(BRAIN_FILE)
 
   if (!exists) {
@@ -83,7 +96,7 @@ export async function trainMegahal(message: Discord.Message, replyChance: number
   const input = replaceUserMentions(message, unprefixedInput)
   logger.debug('Learning from message:', JSON.stringify(input))
 
-  if (totalMsgCount >= SAVE_RATE) {
+  if (totalMsgCount >= saveRate) {
     saveBrain()
     totalMsgCount = 0
   }
@@ -93,7 +106,12 @@ export async function trainMegahal(message: Discord.Message, replyChance: number
   const response = megahal.reply(input)
 
   if (Math.random() < replyChance && !isMuted()) {
-    logger.log('Chatter chance reached, replying:', JSON.stringify(response))
+    const isSameAsChatter = replyChance === chatterChance
+    const replyIsForced = replyChance >= 1
+    const isTrigger = replyIsForced && !isSameAsChatter
+    const prefix = isTrigger ? 'Manual reply triggered,' : 'Chatter chance reached,'
+
+    logger.log(prefix, 'replying:', JSON.stringify(response))
     message.reply(response.replace(/<error>/g, ''))
     msgCount[key]! = 0
   }

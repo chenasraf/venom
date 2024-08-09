@@ -2,7 +2,7 @@ import Discord from 'discord.js'
 import { CHAT_TRIGGERS, COMMAND_TRIGGERS } from '@/env'
 import { parseArguments, parseCommand } from '@/core/commands'
 import { logger } from '@/core/logger'
-import { CHATTER_REPLY_CHANCE, trainMegahal } from '@/core/megahal'
+import { chatterChance, trainMegahal } from '@/core/megahal'
 import { isWhitelisted } from '@/lib/whitelist'
 import { isAdministrator } from '@/utils/discord_utils'
 
@@ -61,6 +61,6 @@ export async function handleMessage(message: Discord.Message) {
 
   if (!triggered) {
     const isTriggerPrefix = CHAT_TRIGGERS.some((p) => message.content.toLowerCase().startsWith(p))
-    trainMegahal(message, isTriggerPrefix ? 1 : CHATTER_REPLY_CHANCE)
+    trainMegahal(message, isTriggerPrefix ? 1 : chatterChance)
   }
 }

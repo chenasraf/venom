@@ -6,7 +6,8 @@ export default command({
   description: 'See your username and ID',
   examples: ['`!s`'],
   async execute(message) {
-    return message.author.send(
+    message.reply("I've sent you a DM with your info.")
+    message.author.send(
       [
         '**Server info:**',
         `ID: ${message.guild!.id}`,
