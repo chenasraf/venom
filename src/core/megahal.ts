@@ -29,14 +29,24 @@ let totalMsgCount = 0
 export let chatterChance: number = DEFAULT_CHATTER_CHANCE
 
 logger.log('Initializing MegaHAL')
-const start = Date.now()
-export const megahal = new MegaHAL('venom')
-const duration = Date.now() - start
-logger.log('MegaHAL initialized in', duration, 'ms')
+export let megahal: MegaHAL
+let loaded = false
 loadBrain()
+
+async function loadMegaHAL() {
+  const start = Date.now()
+  megahal ??= new MegaHAL('venom')
+  loaded = true
+  const duration = Date.now() - start
+  logger.log('MegaHAL initialized in', duration, 'ms')
+}
 
 async function loadBrain() {
   await reloadSettings()
+
+  if (!loaded) {
+    loadMegaHAL()
+  }
 
   const exists = await fileExists(BRAIN_FILE)
 

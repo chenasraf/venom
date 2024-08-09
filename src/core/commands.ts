@@ -28,12 +28,17 @@ export async function loadCommands(): Promise<Command[]> {
   _commands = {}
   const dir = path.resolve(__dirname, '..', 'commands')
   const files = await fs.readdir(dir)
+  const promises: Promise<Command>[] = []
   for (const file of files) {
-    const command = (await import(path.resolve(dir, file))).default
-    logger.debug('Command loaded:', command.command)
-    _commands[command.command] = command
+    const promise = import(path.resolve(dir, file)).then((module) => {
+      const command = module.default
+      logger.debug('Command loaded:', command.command)
+      _commands[command.command] = command
+      return command
+    })
+    promises.push(promise)
   }
-  return Object.values(_commands)
+  return Object.values(await Promise.all(promises))
 }
 
 function cleanMessage(message: string): string {

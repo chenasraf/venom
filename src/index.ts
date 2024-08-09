@@ -13,12 +13,17 @@ const client = new Client({
   ],
 })
 
-loadCommands().then((commands) =>
-  logger.log('Commands loaded:', commands.map((c) => c.command).join(', ')),
-)
+let start = Date.now()
+logger.log('Loading commands...')
+loadCommands().then((commands) => {
+  const duration = Date.now() - start
+  logger.log('Commands loaded:', commands.length + ',', 'took', duration, 'ms')
+})
 
+start = Date.now()
 client.once(Events.ClientReady, (readyClient) => {
-  logger.log('Ready! Logged in as', readyClient.user.tag)
+  const duration = Date.now() - start
+  logger.log('Ready! Logged in as', readyClient.user.tag + ', ', 'took', duration, 'ms')
   readyClient.on(Events.MessageCreate, handleMessage)
 })
 
