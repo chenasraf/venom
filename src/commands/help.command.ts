@@ -4,6 +4,7 @@ import { DEFAULT_COMMAND_PREFIX } from '@/env'
 import { logger } from '@/core/logger'
 import { isWhitelisted } from '@/lib/whitelist'
 import { isAdministrator } from '@/utils/discord_utils'
+import { resolver } from '@/utils/object_utils'
 
 interface HelpMessage {
   command: string
@@ -38,7 +39,8 @@ export default command({
       let description = `\`${DEFAULT_COMMAND_PREFIX}${cmd.command}\``
 
       if (cmd.description) {
-        const wrapped = cmd.description.replace(/\n/g, '\n\t\t\t')
+        const _description = resolver(cmd.description)
+        const wrapped = _description.replace(/\n/g, '\n\t\t\t')
         description += ` - ${wrapped}`
       }
       if (cmd.aliases.length) {
@@ -48,7 +50,8 @@ export default command({
       }
 
       if (name) {
-        cmd.examples.forEach((example) => {
+        const examples = resolver(cmd.examples)
+        examples.forEach((example) => {
           description += `\n\t\t\t*e.g.:* ${example}`
         })
       } else if (cmd.command !== 'help') {

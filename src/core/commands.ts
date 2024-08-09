@@ -3,6 +3,7 @@ import path from 'node:path'
 import fs from 'node:fs/promises'
 import { COMMAND_TRIGGERS } from '@/env'
 import { logger } from './logger'
+import { Resolver } from '@/utils/object_utils'
 
 export interface Command {
   /** Command name */
@@ -10,9 +11,9 @@ export interface Command {
   /** Command aliases */
   aliases: string[]
   /** Command description - shown in help */
-  description: string
+  description: Resolver<string>
   /** Command examples - shown in help */
-  examples: string[]
+  examples: Resolver<string[]>
   /** Global commands are available on non-whitelisted channels (default: false) */
   global?: boolean
   /** Admin-only commands are only available to whitelisted users/permissions/roles (default: false) */

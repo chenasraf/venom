@@ -36,8 +36,7 @@ logger.log('MegaHAL initialized in', duration, 'ms')
 loadBrain()
 
 async function loadBrain() {
-  saveRate = (await getSetting<number>('chat.brainSaveRate')) ?? DEFAULT_SAVE_RATE
-  chatterChance = (await getSetting<number>('chat.chatterChance')) ?? DEFAULT_CHATTER_CHANCE
+  await reloadSettings()
 
   const exists = await fileExists(BRAIN_FILE)
 
@@ -45,6 +44,11 @@ async function loadBrain() {
     return logger.log('Brain file not found, using default brain')
   }
   return megahal.load(BRAIN_FILE).then(() => logger.log('Brain loaded from', BRAIN_FILE))
+}
+
+export async function reloadSettings() {
+  saveRate = (await getSetting<number>('chat.brainSaveRate')) ?? DEFAULT_SAVE_RATE
+  chatterChance = (await getSetting<number>('chat.chatterChance')) ?? DEFAULT_CHATTER_CHANCE
 }
 
 export async function saveBrain() {

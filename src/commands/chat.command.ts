@@ -5,6 +5,7 @@ import {
   getMegahalBrainSize,
   isMuted,
   megahal,
+  reloadSettings,
   saveBrain,
   setMuted,
 } from '@/core/megahal'
@@ -15,12 +16,12 @@ import { isAdministrator } from '@/utils/discord_utils'
 export default command({
   command: 'chat',
   aliases: ['c'],
-  description:
+  description: () =>
     `Manage chatting with Venom. Venom will have a ${chatterChance * 100}% (around every ` +
     `${Math.round(1 / chatterChance)} messages) chance to reply to any incoming message on ` +
     `a channel unless muted. To change this value, contact the one of the server staff.\n` +
     'Muting completely disables chatting, to avoid bugs relating to infinite triggers, or any other reason.',
-  examples: [
+  examples: () => [
     `\`${DEFAULT_COMMAND_PREFIX}chat mute\` - shuts him up`,
     `\`${DEFAULT_COMMAND_PREFIX}chat unmute\` - unmutes him`,
     `\`${DEFAULT_COMMAND_PREFIX}chat save\` - backs up the brain immediately`,
@@ -30,6 +31,7 @@ export default command({
     `\`${DEFAULT_COMMAND_PREFIX}chat whitelist <get|add|remove> <guild|channel>\` - get/update whitelist for ` +
       `guild/channel (see \`${DEFAULT_COMMAND_PREFIX}help whitelist\` for more information (admins only).`,
     `\`${DEFAULT_COMMAND_PREFIX}chat train <lines>\` - feed megahal multiple lines to train (admins only)`,
+    `\`${DEFAULT_COMMAND_PREFIX}chat reload-settings\` - reload settings after a change (admins only)`,
   ],
   execute: async (message, args) => {
     if (!args.length) {
@@ -85,6 +87,10 @@ export default command({
         message.reply('Trained successfully')
         break
       }
+      case 'reload-settings':
+        await reloadSettings()
+        message.reply('Settings reloaded')
+        break
       case 'size': {
         const size = await getMegahalBrainSize('string')
         message.reply(`Brain size: ${size}`)
