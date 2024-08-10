@@ -40,7 +40,7 @@ function terminator(signal: string) {
 // prettier-ignore
 const signals = [
   'SIGHUP', 'SIGINT', 'SIGQUIT', 'SIGILL', 'SIGTRAP', 'SIGABRT', 'SIGBUS', 'SIGFPE', 'SIGUSR1',
-  'SIGSEGV', 'SIGUSR2', 'SIGTERM', 'beforeExit', 'exit',
+  'SIGSEGV', 'SIGUSR2', 'SIGTERM',
 ]
 for (const sig of signals) {
   terminator(sig)

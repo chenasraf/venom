@@ -1,5 +1,6 @@
 import { command } from '@/core/commands'
 import { db } from '@/core/db'
+import { logger } from '@/core/logger'
 import { DEFAULT_COMMAND_PREFIX } from '@/env'
 import { getSetting } from '@/lib/settings'
 import { MENTION_REGEX, getMentionUsername } from '@/utils/discord_utils'
@@ -77,12 +78,10 @@ export default command({
 
 const clean = (str: string): string => str.replace(/[\t\n|]+/g, ' ').replace(/\s+/g, ' ')
 const getQuoteStr = (
-  guild: Discord.Guild,
   { authorName, authorUid, quote, uid }: Quote,
   useMentions: boolean,
 ): string => {
-  const _authorName = authorUid ? guild.members.cache.get(authorUid)?.displayName : authorName
-  const authorMention = authorUid && useMentions ? `<@${authorUid}>` : `@${_authorName}`
+  const authorMention = authorUid && useMentions ? `<@${authorUid}>` : `@${authorName}`
   return `**"${quote}"** - ${authorMention} (ID: #${uid})`
 }
 const getUseMention = async (): Promise<boolean> => getSetting<boolean>('chat.useMentions')
@@ -102,7 +101,7 @@ async function getRandomQuote(message: Discord.Message, _args: string[]): Promis
 
   if (q.length > 0) {
     const quote: Quote = q[0]
-    message.reply(getQuoteStr(message.guild!, quote, useMention))
+    message.reply(getQuoteStr(quote, useMention))
   } else {
     message.reply(
       "This is where I would usually put a quote. I can't remember any, for some reason...",
@@ -124,7 +123,7 @@ async function searchQuotes(message: Discord.Message, args: string[]): Promise<v
   if (q.length > 0) {
     let responseTxt = ''
     q.forEach((quote) => {
-      responseTxt += `\n${getQuoteStr(message.guild!, quote, useMention)}`
+      responseTxt += `\n${getQuoteStr(quote, useMention)}`
     })
     message.reply("Found a few, I'll DM you what I got!")
     message.author.send(`Found ${q.length} quote${q.length !== 1 ? 's' : ''}:\n${responseTxt}`)
@@ -142,7 +141,7 @@ async function removeQuote(message: Discord.Message, id: string): Promise<void> 
   const useMention = await getUseMention()
   if (q.meta?.createdBy === message.author.id) {
     await collection.deleteOne({ uid: id })
-    message.reply(`Quote ${id} deleted - ${getQuoteStr(message.guild!, q, useMention)}`)
+    message.reply(`Quote ${id} deleted - ${getQuoteStr(q, useMention)}`)
   } else {
     message.reply('Oops, you can only remove quotes you created!')
   }
@@ -152,11 +151,11 @@ async function addNewQuote(message: Discord.Message, args: string[]): Promise<vo
   const [authorRaw, ...restRaw] = args
   const hasAuthorUid = MENTION_REGEX.test(authorRaw)
   const authorUid = hasAuthorUid ? authorRaw.slice(2, -1) : undefined
-  const authorCleanName = authorRaw.startsWith('@') ? authorRaw.slice(1) : 'Anonymous'
+  const authorCleanName = authorRaw.startsWith('@') ? authorRaw.slice(1) : authorRaw
   const authorName = hasAuthorUid
     ? getMentionUsername(message, authorUid!) ?? authorCleanName
     : authorCleanName
-  const hasAuthor = MENTION_REGEX.test(authorRaw) || authorRaw.startsWith('@')
+  const hasAuthor = hasAuthorUid || authorRaw.startsWith('@')
   const quote = (hasAuthor ? restRaw : [authorRaw, ...restRaw]).join(' ').trim()
   const differentAuthor = authorUid !== message.author.id
 
@@ -201,8 +200,9 @@ async function addNewQuote(message: Discord.Message, args: string[]): Promise<vo
   }
 
   const useMention = await getUseMention()
-  const quoteStr = getQuoteStr(message.guild!, quoteObj, useMention)
+  const quoteStr = getQuoteStr(quoteObj, useMention)
   collection.insertOne(quoteObj)
+  logger.log('Quote added:', quoteObj)
   message.reply(`${replies[Math.floor(Math.random() * replies.length)]}\n${quoteStr}`)
 }
 
@@ -215,5 +215,5 @@ async function getSingleQuote(message: Discord.Message, id: string): Promise<voi
   }
 
   const useMention = await getUseMention()
-  message.reply(getQuoteStr(message.guild!, quote, useMention))
+  message.reply(getQuoteStr(quote, useMention))
 }
