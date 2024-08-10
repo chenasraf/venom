@@ -28,6 +28,7 @@ export default command({
   description: 'Manage quotes',
   examples: [
     `\`${DEFAULT_COMMAND_PREFIX}quote\` - Get a random quote`,
+    `\`${DEFAULT_COMMAND_PREFIX}quote <search query>\` - Get a random quote that matches your query`,
     `\`${DEFAULT_COMMAND_PREFIX}quote #<id>\` - Get a specific quote`,
     `\`${DEFAULT_COMMAND_PREFIX}quote s[earch] <query>\` - Search for a quote`,
     `\`${DEFAULT_COMMAND_PREFIX}quote c[ount]\` - See how many quotes have been stored so far!`,
@@ -36,8 +37,8 @@ export default command({
   ],
   async execute(message, args) {
     // Get random quote
-    if (args.filter((s) => s.trim().length).length === 0) {
-      getRandomQuote(message, args)
+    if (args.every((s) => !s.trim().length)) {
+      getRandomQuote(message, '')
       return
     }
 
@@ -75,7 +76,7 @@ export default command({
         if (first.startsWith('#')) {
           getSingleQuote(message, args[0].substring(1))
         } else {
-          getRandomQuote(message, args)
+          getRandomQuote(message, args.join(' '))
         }
         return
     }
@@ -99,53 +100,61 @@ async function countQuotes(message: Discord.Message<boolean>) {
   )
 }
 
-async function getRandomQuote(message: Discord.Message, _args: string[]): Promise<void> {
+async function getRandomQuote(message: Discord.Message, query: string): Promise<void> {
   const count = await collection.countDocuments()
-  const r = Math.floor(Math.random() * count)
-  const q = await collection.find().skip(r).limit(1).toArray()
   const useMention = await getUseMention()
+  let list: Quote[] = []
+  let quote: Quote
+  if (query) {
+    list = await _searchQuotes(query)
+    const r = Math.floor(Math.random() * list.length)
+    quote = list[r]
+  } else {
+    const r = Math.floor(Math.random() * count)
+    list = query ? await _searchQuotes(query) : await collection.find().skip(r).limit(1).toArray()
+    quote = list[0]
+  }
 
-  if (q.length > 0) {
-    const quote: Quote = q[0]
+  if (list.length > 0) {
     message.reply(getQuoteStr(quote, useMention))
   } else {
     message.reply(
-      "This is where I would usually put a quote. I can't remember any, for some reason...",
+      query
+        ? "Sorry, didn't find anything that matches that."
+        : "This is where I would usually put a quote. I can't remember any, for some reason...",
     )
   }
 }
 
 async function searchQuotes(message: Discord.Message, args: string[]): Promise<void> {
-  const q = await collection
-    .find<Quote>({
-      $or: [
-        {
-          authorName: {
-            $regex: `${args.join(' ')}`,
-            $options: 'i',
-          },
-        },
-        {
-          quote: {
-            $regex: `${args.join(' ')}`,
-            $options: 'i',
-          },
-        },
-      ],
-    })
-    .toArray()
-
+  const results = await _searchQuotes(args.join(' '))
   const useMention = await getUseMention()
-  if (q.length > 0) {
+
+  if (results.length > 0) {
     let responseTxt = ''
-    q.forEach((quote) => {
+    for (const quote of results) {
       responseTxt += `- ${getQuoteStr(quote, useMention)}\n`
-    })
-    message.reply("Found a few, I'll DM you what I got!")
-    message.author.send(`Found ${q.length} quote${q.length !== 1 ? 's' : ''}:\n${responseTxt}`)
+    }
+    const countStr = `${results.length} quote${results.length !== 1 ? 's' : ''}`
+    message.reply(`Found ${countStr}, I'll DM you what I got!`)
+    message.author.send(`Found ${countStr}:\n${responseTxt}`)
   } else {
     message.reply("Sorry, didn't find anything that matches that.")
   }
+}
+
+async function _searchQuotes(query: string): Promise<Quote[]> {
+  const regex = {
+    $regex: `${query}`,
+    $options: 'i',
+  } as const
+  const results = await collection
+    .find<Quote>({
+      $or: [{ authorName: regex }, { quote: regex }],
+    })
+    .toArray()
+
+  return results
 }
 
 async function removeQuote(message: Discord.Message, id: string): Promise<void> {
@@ -180,24 +189,22 @@ async function addNewQuote(message: Discord.Message, args: string[]): Promise<vo
     `Are you serious? This is the best quote ever${differentAuthor ? `, ${authorName}` : ''}!`,
     'OH. MY. GOD. Perfection.',
     'I am putting this on my wall. This is a quote I will hold dear to me always.',
-    `Is that real? Woah! Hey,${
-      differentAuthor ? ` ${authorName},` : ''
+    `Is that real? Woah! Hey,${differentAuthor ? ` ${authorName},` : ''
     } did you ever consider writing a book?! This will sell for millions.`,
     clean(
       `Okay, this is spooky. I definitely dreamt of ${!hasAuthor ? 'a person' : differentAuthor ? authorName : 'you'} ` +
-        `saying exactly that this week. ${!hasAuthor ? 'Is someone' : differentAuthor ? `Is ${authorName}` : 'Are you'} prying into my subconscious?`,
+      `saying exactly that this week. ${!hasAuthor ? 'Is someone' : differentAuthor ? `Is ${authorName}` : 'Are you'} prying into my subconscious?`,
     ),
     'Consider me floored. If there was an award for amazing quotes, it would be named after this exact one.',
     'Why did no one say this earlier? It HAS to be said!',
     "I can't believe you withold that quote from me until now. It's way too good to just remain unshared!",
     'I have a pretty large memory capacity for a bot, and I gotta say, I scanned all my other quotes, this one is definitely on the top 10.',
     clean(`Oh, I am DEFINITELY saving this. One day someone will interview me about
-    ${
-      !hasAuthor ? 'The best quote I can recall,' : differentAuthor ? authorName + ', ' : 'you,'
-    } and I will refer to this moment precisely.`),
+    ${!hasAuthor ? 'The best quote I can recall,' : differentAuthor ? authorName + ', ' : 'you,'
+      } and I will refer to this moment precisely.`),
     clean(
       `You're not serious. Are you serious? You can't be serious. It's impossible there's **this** good a quote ` +
-        `just floating around
+      `just floating around
     out there. It's probably fictional. Yeah.`,
     ),
   ]
