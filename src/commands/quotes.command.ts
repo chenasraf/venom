@@ -29,10 +29,10 @@ export default command({
   examples: [
     `\`${DEFAULT_COMMAND_PREFIX}quote\` - Get a random quote`,
     `\`${DEFAULT_COMMAND_PREFIX}quote #<id>\` - Get a specific quote`,
-    `\`${DEFAULT_COMMAND_PREFIX}quote search <query>\` - Search for a quote`,
-    `\`${DEFAULT_COMMAND_PREFIX}quote count\` - See how many quotes have been stored so far!`,
-    `\`${DEFAULT_COMMAND_PREFIX}quote add @author <quote>\` - Add a new quote (@author can be a user mention, a plain nickname, or left out)`,
-    `\`${DEFAULT_COMMAND_PREFIX}quote remove <id>\` - Remove quote - You can only remove quotes you created to reduce abuse.`,
+    `\`${DEFAULT_COMMAND_PREFIX}quote s[earch] <query>\` - Search for a quote`,
+    `\`${DEFAULT_COMMAND_PREFIX}quote c[ount]\` - See how many quotes have been stored so far!`,
+    `\`${DEFAULT_COMMAND_PREFIX}quote a[dd] @author <quote>\` - Add a new quote (@author can be a user mention, a plain nickname, or left out)`,
+    `\`${DEFAULT_COMMAND_PREFIX}quote r[emove] <id>\` - Remove quote - You can only remove quotes you created to reduce abuse.`,
   ],
   async execute(message, args) {
     // Get random quote
@@ -46,21 +46,27 @@ export default command({
     switch (first) {
       // Add quote
       case 'add':
+      case 'a':
         addNewQuote(message, args.slice(1))
         return
 
       // Remove quote
       case 'remove':
+      case 'r':
+      case 'delete':
+      case 'd':
         removeQuote(message, args[1])
         return
 
       // Search quotes
       case 'search':
+      case 's':
         searchQuotes(message, args.slice(1))
         return
 
       // Get quote count
       case 'count':
+      case 'c':
         await countQuotes(message)
         return
 
@@ -112,10 +118,20 @@ async function getRandomQuote(message: Discord.Message, _args: string[]): Promis
 async function searchQuotes(message: Discord.Message, args: string[]): Promise<void> {
   const q = await collection
     .find<Quote>({
-      quote: {
-        $regex: `${args.join(' ')}`,
-        $options: 'i',
-      },
+      $or: [
+        {
+          authorName: {
+            $regex: `${args.join(' ')}`,
+            $options: 'i',
+          },
+        },
+        {
+          quote: {
+            $regex: `${args.join(' ')}`,
+            $options: 'i',
+          },
+        },
+      ],
     })
     .toArray()
 
