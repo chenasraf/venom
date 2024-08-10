@@ -23,8 +23,9 @@ const _logger = winston.createLogger({
           silly: 35, // magenta
         }
         const color = `\x1b[${colorMap[i.level as LogLevel]}m`
+        const reset = '\x1b[0m'
         const level = `[${i.level.toUpperCase()}]`.padStart(10, ' ')
-        return `${color}${level} ${i.message}`
+        return `${color}${level} ${i.message}${reset}`
       }),
     }),
   ],
