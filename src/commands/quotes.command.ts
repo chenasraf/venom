@@ -88,7 +88,7 @@ const getQuoteStr = (
   useMentions: boolean,
 ): string => {
   const authorMention = authorUid && useMentions ? `<@${authorUid}>` : `@${authorName}`
-  return `**"${quote}"** - ${authorMention} (ID: #${uid})`
+  return `**"${quote}"** - ${authorMention} \`!q #${uid}\``
 }
 const getUseMention = async (): Promise<boolean> => getSetting<boolean>('chat.useMentions')
 
@@ -137,7 +137,7 @@ async function searchQuotes(message: Discord.Message, args: string[]): Promise<v
 
   const useMention = await getUseMention()
   if (q.length > 0) {
-    let responseTxt = '\n'
+    let responseTxt = ''
     q.forEach((quote) => {
       responseTxt += `- ${getQuoteStr(quote, useMention)}\n`
     })
