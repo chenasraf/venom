@@ -137,9 +137,9 @@ async function searchQuotes(message: Discord.Message, args: string[]): Promise<v
 
   const useMention = await getUseMention()
   if (q.length > 0) {
-    let responseTxt = ''
+    let responseTxt = '\n'
     q.forEach((quote) => {
-      responseTxt += `\n${getQuoteStr(quote, useMention)}`
+      responseTxt += `- ${getQuoteStr(quote, useMention)}\n`
     })
     message.reply("Found a few, I'll DM you what I got!")
     message.author.send(`Found ${q.length} quote${q.length !== 1 ? 's' : ''}:\n${responseTxt}`)
