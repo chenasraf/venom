@@ -12,6 +12,11 @@ const _logger = winston.createLogger({
       level: 'error',
       format: winston.format.uncolorize(),
     }),
+    new winston.transports.File({
+      filename: path.resolve(process.cwd(), 'logs', 'log.log'),
+      level: LOG_LEVEL,
+      format: winston.format.uncolorize(),
+    }),
     new winston.transports.Console({
       format: winston.format.printf((i) => {
         const colorMap: Record<LogLevel, number> = {

@@ -1,4 +1,3 @@
-import { logger } from '@/core/logger'
 import Discord, { PermissionsBitField } from 'discord.js'
 
 export const MENTION_REGEX = /<@!?(\d+)>/g
@@ -14,11 +13,6 @@ export async function isAdministrator(member: Discord.GuildMember): Promise<bool
  * If clean is true (default), will try to fetch nickname from CA style - "Real Name (Nickname)"
  */
 export function getMentionUsername(message: Discord.Message, userId: string, clean = true): string {
-  logger.debug('getMentionUsername', {
-    userId,
-    mentions: message.mentions.members!.toJSON(),
-    userMention: message.mentions.members!.get(userId),
-  })
   const mention = message.mentions.members!.get(userId)
   const displayName = mention?.nickname ?? mention?.displayName ?? 'Unknown'
   if (clean) {
