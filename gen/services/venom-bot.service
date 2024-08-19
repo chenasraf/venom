@@ -1,3 +1,7 @@
+# To recreate:
+# $ cd "{{appRoot}}"
+# $ pnpm install-services
+
 [Unit]
 Description=Venom Bot
 After=network.target
