@@ -4,7 +4,7 @@ After=network.target
 
 [Service]
 WorkingDirectory={{appRoot}}
-ExecStart=/root/Library/pnpm/pnpm start
+ExecStart=/usr/local/bin/dotenvx run --env-file=.env.local -- /root/Library/pnpm/pnpm start
 ExecStop=/bin/kill -SIGINT $MAINPID
 KillSignal=SIGINT
 SendSIGKILL=no
