@@ -52,7 +52,13 @@ export async function handleMessage(message: Discord.Message) {
       if (command) {
         command.execute(message, args)
       } else {
-        if (cmdName) {
+        let cmdRest = message.content.trim()
+        while (cmdRest.startsWith(prefix)) {
+          cmdRest = cmdRest.slice(prefix.length).trim()
+        }
+        cmdRest = cmdRest.replace(/[^a-zA-Z0-9]/g, '')
+        if (cmdRest) {
+          logger.debug('Command not found:', { cmdRest, cmdName })
           message.reply(`Command not found: ${cmdName}`)
         }
       }
