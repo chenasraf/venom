@@ -69,6 +69,8 @@ export async function handleMessage(message: Discord.Message) {
     const isTriggerPrefix = CHAT_TRIGGERS.some((p) => message.content.toLowerCase().startsWith(p))
     // const isReply = message.mentions.has(message.client.user!.id)
     const isReply = message.reference && !message.system
-    trainMegahal(message, isTriggerPrefix || isReply ? 1 : chatterChance)
+    const repliedMessage = await message.fetchReference()
+    const isReplyToMe = isReply && repliedMessage.author.id === message.client.user!.id
+    trainMegahal(message, isTriggerPrefix || isReplyToMe ? 1 : chatterChance)
   }
 }
