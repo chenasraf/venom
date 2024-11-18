@@ -1,6 +1,6 @@
 import Discord, { PermissionsBitField } from 'discord.js'
 
-export const MENTION_REGEX = /<@!?(\d+)>/g
+export const MENTION_REGEX = /<@[!&]?(\d+)>/g
 
 export async function isAdministrator(member: Discord.GuildMember): Promise<boolean> {
   // TODO check role permissions
