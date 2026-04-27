@@ -1,0 +1,30 @@
+# Git
+.git
+.gitignore
+
+# Dependencies (will be reinstalled in container)
+node_modules
+
+# Build output
+build
+
+# Data (mounted as volumes)
+data
+logs
+
+# Environment files (mounted separately)
+.env*
+!.env.local.example
+
+# IDE
+.idea
+.vscode
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Generated
+gen

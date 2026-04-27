@@ -1,0 +1,51 @@
+version: '3.8'
+
+services:
+  mongo:
+    image: mongo:latest
+    container_name: venom-mongo
+    restart: unless-stopped
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: venom
+      MONGO_INITDB_ROOT_PASSWORD: ${DB_PASS}
+    volumes:
+      - /root/apps/venom/data/db:/data/db
+      - /root/apps/venom/data/configdb:/data/configdb
+    networks:
+      - venom-network
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+  bot:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: venom-bot
+    restart: unless-stopped
+    depends_on:
+      mongo:
+        condition: service_healthy
+    environment:
+      # Private key for dotenvx decryption
+      DOTENV_PRIVATE_KEY_LOCAL: ${DOTENV_PRIVATE_KEY_LOCAL}
+      # Override MongoDB URI to use container hostname (password is URL-encoded)
+      MONGODB_URI: mongodb://venom:${DB_PASS_ENCODED}@mongo:27017/venom?authSource=admin&authMechanism=SCRAM-SHA-256
+    volumes:
+      # Mount source code and data (for development/hot-reload if needed)
+      - /root/apps/venom/data/brain.dat:/app/data/brain.dat
+      - /root/apps/venom/logs:/app/logs
+      # Mount env files for dotenvx
+      - /root/apps/venom/.env.local:/app/.env.local:ro
+      - /root/apps/venom/.env.keys:/app/.env.keys:ro
+    networks:
+      - venom-network
+    stop_signal: SIGINT
+    stop_grace_period: 30s
+
+networks:
+  venom-network:
+    driver: bridge

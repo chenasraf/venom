@@ -136,3 +136,4 @@ build
 data/
 .env.keys
 .envrc
+/.env.docker
