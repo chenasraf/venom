@@ -1,8 +1,8 @@
-version: '3.8'
+version: "3.8"
 
 services:
   mongo:
-    image: mongo:latest
+    image: mongo:8.2
     container_name: venom-mongo
     restart: unless-stopped
     environment:
