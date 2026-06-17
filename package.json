@@ -2,6 +2,7 @@
   "name": "venom",
   "version": "0.0.1",
   "description": "",
+  "packageManager": "pnpm@11.7.0",
   "scripts": {
     "start": "tsx src/index.ts",
     "dev": "nodemon --exec tsx src/index.ts",
@@ -15,23 +16,23 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "devDependencies": {
-    "@eslint/js": "^9.8.0",
-    "@types/jsdom": "^21.1.7",
-    "csv": "^6.3.10",
-    "jsdom": "^24.1.1",
-    "nodemon": "^3.1.4",
-    "simple-scaffold": "^2.2.1",
-    "tsc-alias": "^1.8.10",
-    "tsx": "^4.16.5",
-    "typescript-eslint": "^8.0.0"
+    "@eslint/js": "^10.0.1",
+    "@types/jsdom": "^28.0.3",
+    "csv": "^6.6.0",
+    "jsdom": "^29.1.1",
+    "nodemon": "^3.1.14",
+    "simple-scaffold": "^3.1.1",
+    "tsc-alias": "^1.8.17",
+    "tsx": "^4.22.4",
+    "typescript-eslint": "^8.61.1"
   },
   "dependencies": {
-    "discord.js": "^14.15.3",
-    "dotenv": "^16.4.5",
+    "discord.js": "^14.26.4",
+    "dotenv": "^17.4.2",
     "megahal.js": "^1.0.3",
-    "mongodb": "^6.8.0",
-    "nanoid": "^5.0.7",
-    "winston": "^3.13.1"
+    "mongodb": "^7.3.0",
+    "nanoid": "^5.1.11",
+    "winston": "^3.19.0"
   },
   "nodemonConfig": {
     "ignore": [

@@ -1,13 +1,13 @@
-FROM node:20-alpine
+FROM node:24-alpine
 
-# Install pnpm and dotenvx
-RUN corepack enable && corepack prepare pnpm@latest --activate
+# Install dotenvx and enable corepack (pnpm version comes from packageManager in package.json)
+RUN corepack enable
 RUN npm install -g @dotenvx/dotenvx
 
 WORKDIR /app
 
 # Copy package files
-COPY package.json pnpm-lock.yaml ./
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 
 # Install dependencies
 RUN pnpm install --frozen-lockfile
