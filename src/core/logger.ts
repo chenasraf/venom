@@ -69,5 +69,25 @@ export function info(...message: unknown[]): void {
 export function debug(...message: unknown[]): void {
   _log('debug', ...message)
 }
+export async function rotate(): Promise<void> {
+  const fs = await import('fs/promises')
+  const logPath = path.resolve(process.cwd(), 'logs', 'log.log')
+  const errorLogPath = path.resolve(process.cwd(), 'logs', 'error.log')
+  const timestamp = new Date().toISOString().replace(/[:.]/g, '-')
+  await fs.rename(logPath, path.resolve(process.cwd(), 'logs', `log-${timestamp}.log`))
+  await fs.rename(errorLogPath, path.resolve(process.cwd(), 'logs', `error-${timestamp}.log`))
+}
+export async function readLog(): Promise<string> {
+  const fs = await import('fs/promises')
+  const logPath = path.resolve(process.cwd(), 'logs', 'log.log')
+  try {
+    return await fs.readFile(logPath, 'utf-8')
+  } catch (err) {
+    if ((err as NodeJS.ErrnoException).code === 'ENOENT') {
+      return ''
+    }
+    throw err
+  }
+}
 
-export const logger = Object.assign(_log, { log, warn, error, info, debug })
+export const logger = Object.assign(_log, { log, warn, error, info, debug, rotate, readLog })
